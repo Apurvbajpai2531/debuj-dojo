@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t debug-dojo:ci .
-      - uses: aquasecurity/trivy-action@0.28.0   # DevSecOps: image CVE scan
+      - uses: aquasecurity/trivy-action@v0.36.0   # DevSecOps: image CVE scan
         with: { image-ref: "debug-dojo:ci", severity: "CRITICAL,HIGH", exit-code: "1", ignore-unfixed: true }
       - name: Smoke test /health
         run: |
