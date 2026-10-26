@@ -1,0 +1,17 @@
+services:
+  dojo:
+    build: .
+    image: debug-dojo:latest
+    ports: ["${PORT:-3000}:3000"]
+    environment:
+      PORT: "3000"
+      GROQ_API_KEY: "${GROQ_API_KEY:-}"
+      GROQ_MODEL: "${GROQ_MODEL:-openai/gpt-oss-20b}"
+    volumes: ["dojo-data:/app/data"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+volumes:
+  dojo-data:

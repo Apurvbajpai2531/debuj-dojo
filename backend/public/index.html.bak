@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Debug Dojo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b10;--p:#0d141c;--l:#1c2a37;--t:#dbe7f0;--m:#8196a8;--g:#39ff88;--c:#27e0ff;--r:#ff6b78;--y:#ffd166;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--t);font:16px/1.6 'Bricolage Grotesque',system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--c);text-decoration:none}
+:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.mono,.term,textarea{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;max-width:1120px;margin:0 auto;position:relative;z-index:5}
+header b{font-size:20px;color:var(--g);text-shadow:0 0 18px #39ff8866}
+header nav{display:flex;gap:18px}header nav a{color:var(--t)}
+.btn{display:inline-block;border:1px solid var(--l);background:var(--p);color:var(--t);padding:10px 18px;border-radius:10px;font:600 15px inherit;font-family:inherit;cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--c);transform:translateY(-2px)}
+.btn.glow{background:linear-gradient(135deg,var(--g),var(--c));color:#04120a;border:0;padding:15px 30px;font-size:18px;font-weight:800;box-shadow:0 0 28px #39ff8888,0 0 60px #27e0ff44;animation:pl 2.6s infinite}
+@keyframes pl{50%{box-shadow:0 0 40px #39ff88cc,0 0 90px #27e0ff66}}
+.hero{position:relative;padding:50px 0 80px;overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(#1c2a3755 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,#1c2a3755 1px,transparent 1px) 0 0/44px 44px;-webkit-mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%)}
+.hg{position:relative;display:grid;gap:40px;align-items:center}
+@media(min-width:900px){.hg{grid-template-columns:1.05fr 1fr}}
+h1{font-size:clamp(40px,7vw,76px);line-height:1;margin:0 0 18px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,#fff,var(--g) 45%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:var(--m);font-size:19px;max-width:520px;margin:0 0 28px}
+.demo{position:relative;background:#05090dcc;border:1px solid var(--l);border-radius:14px;box-shadow:0 0 60px #27e0ff22;overflow:hidden}
+.demo .tb,.term .tb{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--l);font-size:12px;color:var(--m);align-items:center}
+.tb i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.tb i+i{background:#febc2e}.tb i+i+i{background:#28c840}
+.demo .bd{padding:16px;min-height:150px;font:14px/1.7 'JetBrains Mono',monospace}
+.ln.e,.e{color:var(--r)}.ln.o,.o{color:var(--g)}.pr{color:var(--g)}
+.cur{display:inline-block;width:8px;height:15px;background:var(--g);vertical-align:-2px;animation:bk 1s steps(1) infinite}@keyframes bk{50%{opacity:0}}
+.xp{position:absolute;right:16px;top:50px;background:var(--g);color:#04120a;font-weight:800;padding:6px 14px;border-radius:999px;box-shadow:0 0 24px var(--g);animation:up 2.4s forwards}
+@keyframes up{0%{transform:translateY(20px);opacity:0}15%{transform:none;opacity:1}85%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+.stats{display:flex;flex-wrap:wrap;justify-content:space-around;gap:20px;padding:26px 20px;border-block:1px solid var(--l);background:#0a1118}
+.stats div{text-align:center}.stats b{display:block;font-size:34px;color:var(--c)}.stats span{color:var(--m)}
+section.s{padding:70px 0}h2{font-size:clamp(28px,4vw,40px);margin:0 0 30px;letter-spacing:-.02em}
+.cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:22px;transition:.25s}
+.cards .card:hover,.cc:hover{border-color:var(--g);box-shadow:0 0 30px #39ff8822;transform:translateY(-4px)}
+.card svg{width:40px;height:40px;stroke:var(--g);fill:none;stroke-width:1.6;margin-bottom:10px}
+.card h3{margin:0 0 6px}.card p{margin:0;color:var(--m)}
+.belts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bt{flex:1;min-width:120px;padding:16px 10px;border-radius:10px;text-align:center;font-weight:800;color:#05090d}
+.rv{opacity:0;transform:translateY(24px);transition:.6s}.rv.in{opacity:1;transform:none}
+footer{border-top:1px solid var(--l);padding:28px 20px;text-align:center;color:var(--m)}
+.top2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0 24px}
+.top2 .card b{font-size:26px;display:block}.bar{height:8px;background:var(--l);border-radius:9px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--c))}
+.cc{display:block;color:var(--t);background:var(--p);border:1px solid var(--l);border-radius:14px;padding:18px;transition:.25s}
+.chip{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--c);color:var(--c)}
+.done{border-color:#39ff8866}.done .chip{border-color:var(--g);color:var(--g)}
+ul.bg{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+ul.bg li{padding:12px;border:1px dashed var(--l);border-radius:10px;opacity:.45}ul.bg li.on{opacity:1;border:1px solid var(--y)}ul.bg span{display:block;font-size:13px;color:var(--m)}
+.lb div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--l)}.lb .me{color:var(--g);font-weight:800}
+.bar2{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:10px 0 16px}.bar2 b{flex:1}
+.grid{display:grid;gap:16px}@media(min-width:960px){.grid{grid-template-columns:1fr 1.25fr}}
+.term{background:#04080c;border:1px solid var(--l);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;height:min(70vh,560px);min-height:360px}
+.out{flex:1;overflow:auto;padding:12px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--l);font-size:13.5px}.in span{color:var(--g);white-space:nowrap}
+.in input{flex:1;min-width:0;background:none;border:0;color:var(--t);font:inherit;outline:0}
+textarea{width:100%;height:230px;background:#04080c;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:10px;font-size:13px;resize:vertical}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--m);padding:6px 10px;cursor:pointer;font:13px 'JetBrains Mono',monospace}.tabs button[aria-selected=true]{color:var(--g);border-color:var(--g)}
+.hint{border-left:3px solid var(--y);padding:6px 12px;margin:8px 0;color:#f3e3b8;background:#ffd16610}
+.modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20;padding:16px}
+.modal .card{max-width:520px;width:100%;border-color:var(--g);box-shadow:0 0 60px #39ff8855;animation:pop .4s}@keyframes pop{from{transform:scale(.85);opacity:0}}
+.big{font-size:44px;font-weight:800;color:var(--g)}
+.cf{position:fixed;top:40%;left:50%;width:8px;height:8px;border-radius:2px;animation:cf 1.4s ease-out forwards;z-index:21}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+.auth{max-width:420px;margin:30px auto 60px;box-shadow:0 0 50px #27e0ff22}.auth h2{margin:4px 0 12px}
+.seg{display:flex;gap:6px;margin:6px 0 10px}.seg button{flex:1;padding:9px;background:var(--bg);border:1px solid var(--l);color:var(--m);border-radius:8px;cursor:pointer;font:inherit}.seg button[aria-selected=true]{color:var(--g);border-color:var(--g)}
+label{display:block;margin:12px 0;color:var(--m);font-size:14px}.f{width:100%;margin-top:4px;background:#04080c;border:1px solid var(--l);border-radius:8px;padding:11px;color:var(--t);font:15px 'JetBrains Mono',monospace}.f:focus{border-color:var(--c);outline:0;box-shadow:0 0 0 3px #27e0ff33}
+</style></head><body>
+<header class="top"><a href="#home" class="mono"><b>&gt;_ Debug Dojo</b></a><nav><a href="#dojo">Dojo</a><a href="#lab">Linux Lab</a><a href="#login" id="au">Log in</a></nav></header>
+<main id="app"></main>
+<script>
+const $=(s,r=document)=>r.querySelector(s),HOME='/home/dojo';
+let SV={xp:0,done:{},streak:0,last:''},S,fs,TM;
+try{Object.assign(SV,JSON.parse(localStorage.getItem('dd1')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('dd1',JSON.stringify(SV))}catch(e){}};
+const day=(o=0)=>new Date(Date.now()-o*864e5).toISOString().slice(0,10);
+const BELTS=[['White',0,'#e8eef3'],['Yellow',60,'#ffd166'],['Green',160,'#39ff88'],['Brown',300,'#c08457'],['Black',450,'#6b7c8c']];
+const belt=x=>BELTS.filter(b=>b[1]<=x).pop();
+const dn=()=>Object.keys(SV.done).length,fmt=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const stk=()=>SV.last===day()||SV.last===day(1)?SV.streak:0;
+const BADGES=[['First Blood','Solve any challenge',()=>dn()>0],['Clean Run','Solve with zero hints',()=>Object.values(SV.done).some(d=>d.h===0)],['Speed Demon','Solve in under 90s',()=>Object.values(SV.done).some(d=>d.t<90)],['On Fire','3-day streak',()=>stk()>=3],['Dojo Master','Solve every challenge',()=>dn()>=CH.length]];
+const RIV=[['neo_root',520],['kernel_kat',340],['sudo_sam',190],['bash_bunny',90]];
+const win=()=>{if(S&&S.ch&&!S.won){S.won=1;S.onWin&&S.onWin()}};
+/* ---------- challenges ---------- */
+const CH=[
+{id:'perm',cat:'Linux',title:'Permission denied',xp:50,edit:[],story:'Your deploy script refuses to run. Run it and read the error, then fix it the Linux way.',files:{'deploy.sh':{c:'#!/bin/bash\necho "Deploying build 42"\n',m:'rw-r--r--',run:()=>{win();return 'Deploying build 42...\n✔ Deployed to production!'}}},hints:['Try ./deploy.sh first. Then ls -l deploy.sh - look at the x bits.','The file has no execute permission.','chmod +x deploy.sh'],why:'Linux only runs a file if its execute bit is set. ls -l showed -rw-r--r-- (no x). chmod +x adds the execute permission so the shell is allowed to launch it.'},
+{id:'env',cat:'Linux',title:'Missing environment variable',xp:60,edit:[],story:'The app crashes on start. It reads its database address from the environment. Make it boot.',files:{'app':{c:'#!/bin/sh\n# needs DB_URL\n',m:'rwxr-xr-x',run:()=>/^postgres/.test(S.env.DB_URL||'')?(win(),'✔ connected to '+S.env.DB_URL+'\nServer running on :3000'):'Error: DB_URL is not set\n✘ exited with code 1'}},hints:['Run ./app and read the error. env lists your variables.','Variables are set with export.','export DB_URL=postgres://db:5432/app then ./app'],why:'Processes inherit variables from the shell that starts them. DB_URL did not exist, so the app aborted. export puts it in the environment of every child process, and the app then found it.'},
+{id:'dock1',cat:'Docker',title:'Wrong port mapping',xp:80,edit:['docker-compose.yml'],story:'The web container starts but localhost:8080 never answers. The app inside listens on port 3000.',files:{'docker-compose.yml':{c:'services:\n  web:\n    image: dojo/api\n    ports:\n      - "8080:80"\n'}},hints:['Port mapping format is HOST:CONTAINER.','The container side must be the port the app listens on.','Change "8080:80" to "8080:3000", save, then docker compose up and curl localhost:8080'],why:'ports maps HOST:CONTAINER. Docker was forwarding 8080 to container port 80, where nothing listens. The app listens on 3000, so 8080:3000 routes traffic correctly.',curl:p=>{if(p!=='8080'||!S.flags.up)return 'curl: (7) Failed to connect to localhost port '+p+': Connection refused';if(/8080:3000/.test(fs[HOME+'/docker-compose.yml'].c)){win();return 'HTTP/1.1 200 OK\n✔ Hello from Debug Dojo'}return 'curl: (56) Recv failure: Connection reset by peer'}},
+{id:'dock2',cat:'Docker',title:'Container keeps crashing',xp:80,edit:['Dockerfile'],story:'The image builds, but the container exits immediately on docker run. Check what it tries to start.',files:{'Dockerfile':{c:'FROM node:20-alpine\nWORKDIR /app\nCOPY . .\nRUN npm ci\nCMD ["node", "serv.js"]\n'},'server.js':{c:'require("http").createServer((q,r)=>r.end("ok")).listen(3000)\n'}},hints:['docker build -t api . then docker run api','Read the crash message and compare with ls.','The file is server.js, not serv.js. Fix CMD, save, build and run again.'],why:'CMD tells the container what to run. It pointed at serv.js which does not exist in /app, so node died with MODULE_NOT_FOUND and the container exited. Correcting the filename fixes the start command (rebuild so the image picks it up).'},
+{id:'nginx',cat:'Nginx',title:'Broken reverse proxy',xp:100,edit:['/etc/nginx/conf.d/app.conf'],story:'Nginx must proxy to the Node app on 3000. Validate the config, reload, and make curl localhost return 200.',files:{'/etc/nginx/conf.d/app.conf':{c:'server {\n  listen 80;\n  location / {\n    proxy_pass http://127.0.0.1:300\n  }\n}\n'}},hints:['Always start with nginx -t.','Two bugs: a missing terminator and a wrong port.','proxy_pass http://127.0.0.1:3000; then nginx -t, nginx -s reload, curl localhost'],why:'nginx directives end with a semicolon, so -t rejected the file. After that, the upstream port was 300 while the app listens on 3000, giving a 502 Bad Gateway. Fix both, validate with -t, reload.',curl:p=>{if(p!=='80'||!S.flags.t)return 'curl: (7) Failed to connect to localhost port '+p+': Connection refused';if(/proxy_pass\s+http:\/\/127\.0\.0\.1:3000\s*;/.test(fs['/etc/nginx/conf.d/app.conf'].c)){win();return 'HTTP/1.1 200 OK\n✔ Hello from upstream :3000'}return '502 Bad Gateway\nerror.log: connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:300'}},
+{id:'k8s',cat:'Kubernetes',title:'CrashLoopBackOff',xp:100,edit:['deploy.yaml'],story:'Your pod restarts forever. Apply the manifest, inspect it, and make it Running.',files:{'deploy.yaml':{c:'apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web\nspec:\n  replicas: 1\n  selector:\n    matchLabels: {app: web}\n  template:\n    metadata:\n      labels: {app: web}\n    spec:\n      containers:\n      - name: web\n        image: nginx:1.27\n        ports:\n        - containerPort: 80\n        livenessProbe:\n          httpGet:\n            path: /\n            port: 8081\n'}},hints:['kubectl apply -f deploy.yaml, kubectl get pods, kubectl describe pod web','Liveness probe fails -> kubelet kills the container.','Probe port must be 80. Edit, save, apply again, get pods.'],why:'The liveness probe checked port 8081 but nginx listens on 80. Each failed probe made the kubelet restart the container, producing CrashLoopBackOff. Pointing the probe at port 80 keeps the pod healthy.'},
+{id:'ci',cat:'CI/CD',title:'Failing GitHub Actions',xp:100,edit:['.github/workflows/ci.yml'],story:'Your pipeline is red. "git push" triggers the simulated CI. Fix the workflow until it is green.',files:{'.github/workflows/ci.yml':{c:'name: ci\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v9\n      - run: npm ci\n      - run: npm tset\n'}},hints:['git push, then read every failing step.','One action version does not exist, one command is mistyped.','Use actions/checkout@v4 and npm test'],why:'actions/checkout@v9 does not exist, so the job could not even start. Then npm tset is a typo for npm test. CI runs exactly what the YAML says, so small typos fail the whole pipeline.'}];
+/* ---------- virtual filesystem + shell ---------- */
+const dirname=k=>k.replace(/\/[^/]*$/,'')||'/',kids=p=>Object.keys(fs).filter(k=>k!==p&&dirname(k)===p);
+const res=p=>{p=p||'.';if(p[0]!=='/')p=S.cwd+'/'+p;const o=[];for(const s of p.split('/')){if(!s||s==='.')continue;s==='..'?o.pop():o.push(s)}return '/'+o.join('/')};
+function mkfs(x){const f={};const d=p=>{if(!f[p]){f[p]={d:1,m:'rwxr-xr-x'};if(p!=='/')d(dirname(p))}};d('/');
+const base={'/home/dojo/notes.txt':{c:'welcome to the dojo\nlinux is fun\npractice every day\n'},'/etc/hostname':{c:'dojo\n'},'/var/log/syslog':{c:'boot ok\nnginx started\nerror: disk 91%\nsshd listening\n'},'/tmp/.keep':{c:''}};
+const all={...base};for(const k in x)all[k[0]==='/'?k:HOME+'/'+k]=x[k];
+for(const k in all){d(dirname(k));f[k]={m:'rw-r--r--',...all[k]}}return f}
+const C={
+help:()=>'Try: ls cd pwd cat echo mkdir touch rm cp mv chmod grep head tail wc env export whoami id ps kill df free uname date curl history clear nano docker kubectl nginx git sudo\nSupports pipes (|), > and >>, $VARS, ~ and Tab completion.',
+pwd:()=>S.cwd,whoami:()=>'dojo',id:()=>'uid=1000(dojo) gid=1000(dojo) groups=1000(dojo),27(sudo),998(docker)',hostname:()=>'dojo',
+uname:()=>'Linux dojo 6.8.0-dojo x86_64 GNU/Linux',date:()=>new Date().toString(),echo:a=>a.join(' '),
+df:()=>'Filesystem  Size  Used Avail Use% Mounted on\n/dev/vda1    20G  9.1G  11G  46% /',free:()=>'        total  used  free\nMem:     2048M  612M  1130M',
+ps:()=>'  PID TTY      TIME CMD\n    1 ?    00:00:01 init\n   42 ?    00:00:00 sshd\n   88 pts/0 00:00:00 bash\n  131 pts/0 00:00:00 ps',
+kill:a=>/^-?\d+$/.test(a[a.length-1]||'')?'':'kill: usage: kill [-9] pid',
+systemctl:a=>a[0]==='status'?'● '+(a[1]||'nginx')+'.service - active (running) since boot':'systemctl: try "status nginx"',
+history:()=>S.hist.map((h,i)=>String(i+1).padStart(4)+'  '+h).join('\n'),
+clear:()=>{S.O.innerHTML='';return ''},
+ls(a){const fl=a.filter(x=>x[0]=='-').join(''),ps=a.filter(x=>x[0]!='-'),p=res(ps[0]),f=fs[p];if(!f)return `ls: cannot access '${ps[0]}': No such file or directory`;
+const L=/l/.test(fl),names=f.d?kids(p).map(k=>k.split('/').pop()).filter(n=>/a/.test(fl)||n[0]!='.').sort():[p.split('/').pop()];
+return names.map(n=>{const e=f.d?fs[(p==='/'?'':p)+'/'+n]:f;return L?`${e.d?'d':'-'}${e.m} 1 dojo dojo ${String((e.c||'').length).padStart(5)} ${n}`:n}).join(L?'\n':'  ')},
+cd(a){const t=res(a[0]||HOME);return !fs[t]?`bash: cd: ${a[0]}: No such file or directory`:!fs[t].d?`bash: cd: ${a[0]}: Not a directory`:(S.cwd=t,'')},
+cat(a,inp){if(!a.length)return inp||'';return a.map(x=>{const f=fs[res(x)];return !f?`cat: ${x}: No such file or directory`:f.d?`cat: ${x}: Is a directory`:f.c.replace(/\n$/,'')}).join('\n')},
+mkdir(a){const P=a.includes('-p');return a.filter(x=>x[0]!='-').map(x=>{const t=res(x);if(fs[t])return P?'':`mkdir: cannot create directory '${x}': File exists`;if(!fs[dirname(t)]){if(!P)return `mkdir: cannot create directory '${x}': No such file or directory`;let q='';for(const s of t.split('/').filter(Boolean)){q+='/'+s;if(!fs[q])fs[q]={d:1,m:'rwxr-xr-x'}}return ''}fs[t]={d:1,m:'rwxr-xr-x'};return ''}).filter(Boolean).join('\n')},
+touch(a){return a.map(x=>{const t=res(x);if(!fs[dirname(t)])return `touch: cannot touch '${x}': No such file or directory`;if(!fs[t])fs[t]={c:'',m:'rw-r--r--'};return ''}).filter(Boolean).join('\n')},
+rm(a){const r=a.some(x=>/^-\w*r/.test(x)),o=[];for(const x of a.filter(x=>x[0]!='-')){const p=res(x),f=fs[p];if(p==='/'){o.push("rm: it is dangerous to operate recursively on '/'");continue}if(!f){o.push(`rm: cannot remove '${x}': No such file or directory`);continue}if(f.d&&!r){o.push(`rm: cannot remove '${x}': Is a directory`);continue}Object.keys(fs).forEach(k=>{if(k===p||k.startsWith(p+'/'))delete fs[k]})}return o.join('\n')},
+cp(a){const[s,d]=a.filter(x=>x[0]!='-'),f=fs[res(s||'')];if(!f||f.d||!d)return 'cp: cannot copy (need an existing file and a target)';let t=res(d);if(fs[t]&&fs[t].d)t+='/'+res(s).split('/').pop();fs[t]={...f};return ''},
+mv(a){const e=C.cp(a);if(e)return e.replace('cp','mv');delete fs[res(a.filter(x=>x[0]!='-')[0])];return ''},
+chmod(a){const m=a[0],f=fs[res(a[1])];if(!a[1])return 'chmod: missing operand';if(!f)return `chmod: cannot access '${a[1]}': No such file or directory`;
+if(/^[0-7]{3}$/.test(m))f.m=[...m].map(d=>[4,2,1].map((b,i)=>d&b?'rwx'[i]:'-').join('')).join('');
+else{const r=m.match(/^([ugoa]*)([+-])([rwx]+)$/);if(!r)return `chmod: invalid mode: '${m}'`;const w=r[1]||'a',s=[...f.m];[...'ugo'].forEach((x,i)=>{if(w.includes('a')||w.includes(x))for(const c of r[3])s[i*3+'rwx'.indexOf(c)]=r[2]=='+'?c:'-'});f.m=s.join('')}return ''},
+grep(a,inp){const fl=a.filter(x=>x[0]=='-').join(''),r=a.filter(x=>x[0]!='-');if(!r[0])return 'usage: grep [-inv] pattern [file]';let tx=inp;if(r[1]){const f=fs[res(r[1])];if(!f)return `grep: ${r[1]}: No such file or directory`;tx=f.c}if(tx==null)return '';let re;try{re=new RegExp(r[0],/i/.test(fl)?'i':'')}catch(e){return 'grep: invalid pattern'}return tx.split('\n').map((l,i)=>[l,i+1]).filter(([l])=>l!==''&&re.test(l)!=/v/.test(fl)).map(([l,i])=>(/n/.test(fl)?i+':':'')+l).join('\n')},
+wc(a,inp){const x=a.filter(v=>v[0]!='-')[0],tx=x?(fs[res(x)]||{c:''}).c:inp||'',l=tx.split('\n').length-(tx.endsWith('\n')||!tx?1:0);return a.includes('-l')?String(l):`${l} ${tx.split(/\s+/).filter(Boolean).length} ${tx.length}`},
+head(a,i){return ht('head',a,i)},tail(a,i){return ht('tail',a,i)},
+env:()=>Object.entries(S.env).map(([k,v])=>k+'='+v).join('\n'),
+export(a){a.forEach(x=>{const i=x.indexOf('=');if(i>0)S.env[x.slice(0,i)]=x.slice(i+1)});return ''},
+curl(a){const u=a.find(x=>x[0]!='-')||'',m=u.match(/(?:localhost|127\.0\.0\.1)(?::(\d+))?/);if(!m)return `curl: (6) Could not resolve host: ${u}`;const p=m[1]||'80';return S.ch&&S.ch.curl?S.ch.curl(p):`curl: (7) Failed to connect to localhost port ${p}: Connection refused`},
+nano(a){if(!a[0])return 'usage: nano FILE';const p=res(a[0]);if(!fs[dirname(p)])return `nano: cannot open ${a[0]}: No such directory`;if(!fs[p])fs[p]={c:'',m:'rw-r--r--'};S.edit(p);return 'Opened '+a[0]+' in the editor panel. Save with the button or Ctrl+S.'},
+docker(a){const id=S.ch&&S.ch.id,s=a[0],f=n=>fs[HOME+'/'+n];
+if(s==='compose'&&a[1]==='up'){if(!f('docker-compose.yml'))return 'no configuration file provided: not found';S.flags.up=1;return '[+] Running 1/1\n ✔ Container app-web-1  Started\nweb-1  | server listening on :3000\nTip: curl localhost:8080'}
+if(s==='ps')return 'CONTAINER ID  IMAGE     STATUS        PORTS'+(S.flags.up?'\n3f2a91c0d1    dojo/api  Up 3 seconds  0.0.0.0:8080->'+(/8080:3000/.test(f('docker-compose.yml').c)?'3000':'80')+'/tcp':'');
+if(s==='build'){if(!f('Dockerfile'))return 'ERROR: failed to read Dockerfile';S.flags.built=1;return '[+] Building 3.2s\n ✔ image api:latest built'}
+if(s==='run'||s==='logs'){if(!f('Dockerfile'))return 'Unable to find image locally';if(!S.flags.built)return 'Unable to find image "api:latest" locally - run docker build -t api . first';if(/CMD\s*\[[^\]]*server\.js/.test(f('Dockerfile').c)){win();return '✔ server listening on :3000'}return "Error: Cannot find module '/app/serv.js'\n✘ container exited with code 1"}
+return 'Supported here: docker ps | build -t api . | run api | logs | compose up'},
+kubectl(a){const f=fs[HOME+'/deploy.yaml'];if(!f)return 'error: no manifest in this dojo (try the Kubernetes challenge)';
+if(a[0]==='apply'){S.applied=f.c;return 'deployment.apps/web configured'}
+const ok=S.applied!=null&&/port:\s*80\s*$/m.test(S.applied);if(S.applied==null)return 'No resources found in default namespace.';
+if(a[0]==='get'){if(ok){win();return 'NAME        READY  STATUS   RESTARTS  AGE\nweb-7d9f6c  1/1    Running  0         12s'}return 'NAME        READY  STATUS            RESTARTS  AGE\nweb-7d9f6c  0/1    CrashLoopBackOff  4         2m'}
+if(a[0]==='describe'||a[0]==='logs')return ok?'Events: none':'Warning  Unhealthy  Liveness probe failed: Get "http://10.1.0.7:8081/": connection refused\nWarning  BackOff    Back-off restarting failed container';
+return 'usage: kubectl apply -f FILE | get pods | describe pod web'},
+nginx(a){const f=fs['/etc/nginx/conf.d/app.conf'];if(!f)return 'nginx: not installed in this lab (try the Nginx challenge)';if(a[0]!=='-t'&&a[0]!=='-s')return 'usage: nginx -t | nginx -s reload';const m=f.c.match(/proxy_pass[^\n]*/);if(m&&!/;\s*$/.test(m[0]))return 'nginx: [emerg] directive "proxy_pass" is not terminated by ";" in /etc/nginx/conf.d/app.conf:4\nnginx: configuration file test failed';S.flags.t=1;return a[0]=='-t'?'nginx: the configuration file syntax is ok\nnginx: configuration file test is successful':'✔ nginx reloaded'},
+git(a){if(a[0]==='status')return 'On branch main\nnothing to commit, working tree clean';if(a[0]!=='push')return 'usage: git push | git status';const f=fs[HOME+'/.github/workflows/ci.yml'];if(!f)return 'fatal: no remote configured';const e=[];if(!/checkout@v[1-4]\b/.test(f.c))e.push('✘ Unable to resolve action actions/checkout - version not found');if(/npm tset/.test(f.c))e.push('✘ npm error: Unknown command "tset" - did you mean npm test?');if(e.length)return 'remote: running workflow "ci"...\n'+e.join('\n')+'\nProcess completed with exit code 1.';win();return 'remote: running workflow "ci"...\n✔ checkout\n✔ npm ci\n✔ npm test - all green\n✔ CI passed'}};
+C.vi=C.vim=C.nano;C['docker-compose']=a=>C.docker(['compose',...a]);
+function ht(k,a,inp){let n=10,fl=[];for(let i=0;i<a.length;i++){if(a[i]==='-n')n=+a[++i];else if(/^-\d+$/.test(a[i]))n=-a[i];else fl.push(a[i])}const f=fl[0]?fs[res(fl[0])]:null,tx=fl[0]?(f&&f.c):inp;if(tx==null)return `${k}: ${fl[0]}: No such file or directory`;const L=tx.replace(/\n$/,'').split('\n');return (k=='head'?L.slice(0,n):L.slice(-n)).join('\n')}
+function tok(s){return (s.match(/"[^"]*"|'[^']*'|\S+/g)||[]).map(x=>{const sq=x[0]=="'",v=/^["']/.test(x)?x.slice(1,-1):x;return sq?v:v.replace(/\$(\w+)/g,(_,k)=>S.env[k]??'').replace(/^~(?=\/|$)/,HOME)})}
+function one(s,inp){let t=tok(s.replace(/\s*(>>?)\s*/g,' $1 ').trim());if(!t.length)return '';let red=null;const ri=t.findIndex(x=>x==='>'||x==='>>');if(ri>-1){red=[t[ri],t[ri+1]];t=t.slice(0,ri)}
+let c=t[0],a=t.slice(1);if(c==='sudo'){c=a[0];a=a.slice(1)}let o;
+if(!c)o='sudo: a command is required';
+else if(c.includes('/')){const p=res(c),f=fs[p];o=!f?`bash: ${c}: No such file or directory`:f.d?`bash: ${c}: Is a directory`:!/x/.test(f.m)?`bash: ${c}: Permission denied`:f.run?f.run():'(script ran, no output)'}
+else if(C.hasOwnProperty(c))o=C[c](a,inp);else o=`bash: ${c}: command not found`;
+if(red){if(!red[1])return 'bash: syntax error near unexpected token `newline`';const p=res(red[1]);if(!fs[dirname(p)])return `bash: ${red[1]}: No such file or directory`;if(fs[p]&&fs[p].d)return `bash: ${red[1]}: Is a directory`;fs[p]={m:'rw-r--r--',...fs[p],c:(red[0]=='>>'&&fs[p]?fs[p].c:'')+o+'\n'};return ''}return o}
+const run=line=>{let o=null;for(const sg of line.split(/\s\|\s/))o=one(sg,o);return o};
+/* ---------- shell UI ---------- */
+const col=l=>/error|denied|failed|not found|no such|✘|crashloop|refused|invalid|emerg|bad gateway|unable|cannot|not set/i.test(l)?'e':/✔|success|passed|started|running|ok$/i.test(l)?'o':'';
+function boot(ch){S={fs:mkfs(ch?ch.files:{}),cwd:HOME,env:{HOME,USER:'dojo',SHELL:'/bin/bash',PATH:'/usr/local/bin:/usr/bin:/bin',LANG:'en_US.UTF-8'},hist:[],ch,flags:{},won:0,O:$('#O')};fs=S.fs;
+const I=$('#I'),P=$('#P'),O=S.O;let hi=0;
+const pr=()=>P.textContent='dojo@dojo:'+S.cwd.replace(HOME,'~')+'$',put=(t,c)=>{String(t).split('\n').forEach(l=>{const d=document.createElement('div');d.className=c||col(l);d.textContent=l||' ';O.appendChild(d)});O.scrollTop=1e9};
+put(ch?'Debug Dojo shell - type "help" for commands. Read the story, then fix the bug.':'Linux Lab - a safe sandbox. Type "help". Nothing here can break your machine.','o');pr();
+S.edit=openEd;
+$('#T').onclick=()=>getSelection().toString()||I.focus();
+I.onkeydown=e=>{if(e.key==='Enter'){const v=I.value;put('dojo@dojo:'+S.cwd.replace(HOME,'~')+'$ '+v,'pr');I.value='';if(v.trim()){S.hist.push(v);hi=S.hist.length;let o;try{o=run(v)}catch(x){o='shell error: '+x.message}if(o)put(o)}pr()}
+else if(e.key==='ArrowUp'){e.preventDefault();if(hi>0)I.value=S.hist[--hi]}
+else if(e.key==='ArrowDown'){e.preventDefault();I.value=hi<S.hist.length-1?S.hist[++hi]:(hi=S.hist.length,'')}
+else if(e.key==='l'&&e.ctrlKey){e.preventDefault();O.innerHTML=''}
+else if(e.key==='c'&&e.ctrlKey){put(P.textContent+' '+I.value+'^C','pr');I.value=''}
+else if(e.key==='Tab'){e.preventDefault();const v=I.value,pt=v.split(/\s+/),last=pt.pop(),i=last.lastIndexOf('/')+1,base=last.slice(i),first=!pt.length&&!i;
+const pool=first?Object.keys(C):kids(res(last.slice(0,i)||'.')).map(k=>k.split('/').pop()),m=pool.filter(x=>x.startsWith(base));
+if(m.length===1)I.value=[...pt,last.slice(0,i)+m[0]].join(' ')+(first?' ':'');else if(m.length>1)put(m.join('  '),'m')}};
+setTimeout(()=>I.focus({preventScroll:true}),50);
+const tabs=[];let cur=null;
+function openEd(p){$('#ed').hidden=false;if(!tabs.includes(p))tabs.push(p);cur=p;draw()}
+function draw(){$('#tabs').innerHTML=tabs.map(p=>`<button role="tab" aria-selected="${p===cur}" data-p="${p}">${p.split('/').pop()}</button>`).join('');$('#ta').value=(fs[cur]||{c:''}).c;$('#es').textContent=cur;
+$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;draw()})}
+const sv=()=>{if(!cur)return;fs[cur]={m:'rw-r--r--',...fs[cur],c:$('#ta').value};$('#es').textContent='Saved '+cur+' ✔';put('Saved '+cur,'o')};
+$('#sv').onclick=sv;$('#ta').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();sv()}};
+if(ch&&ch.edit.length)ch.edit.forEach(openEd),cur=ch.edit[0],draw()}
+const termHTML=`<div class="term" id="T"><div class="tb"><i></i><i></i><i></i><span style="margin-left:8px">bash - dojo@dojo</span></div><div class="out" id="O" role="log" aria-live="polite"></div><div class="in"><span id="P"></span><input id="I" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal input"></div></div>`;
+const edHTML=`<div class="card" id="ed" hidden style="padding:12px;margin-top:14px"><div class="tabs" id="tabs" role="tablist"></div><textarea id="ta" aria-label="File editor" spellcheck="false"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="mono" id="es" style="font-size:12px;color:var(--m)"></span><button class="btn" id="sv">Save (Ctrl+S)</button></div></div>`;
+/* ---------- views ---------- */
+let USER=null;
+const recalc=()=>{SV.xp=Object.entries(SV.done).reduce((a,[id,d])=>{const c=CH.find(x=>x.id===id);return a+(c?Math.max(10,c.xp-d.h*10):0)},0)};
+const sync=()=>USER?fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({done:SV.done})}).catch(()=>{}):0;
+const setAu=()=>{const a=$('#au');a.textContent=USER?USER.username+' · Log out':'Log in';a.href=USER?'#dojo':'#login'};
+async function pull(){try{const r=await fetch('/api/progress');if(!r.ok)return;const j=await r.json();for(const k in j.done||{})if(!SV.done[k])SV.done[k]=j.done[k];recalc();save();sync()}catch(e){}}
+async function init(){try{const r=await fetch('/api/auth/me');if(r.ok){USER=await r.json();setAu();await pull();if(/^(dojo|home)?$/.test(location.hash.slice(1)))route()}}catch(e){}}
+$('#au').onclick=async e=>{if(!USER)return;e.preventDefault();await fetch('/api/auth/logout',{method:'POST'}).catch(()=>{});USER=null;setAu();location.hash==='#dojo'?route():location.hash='dojo'};
+const app=$('#app');
+function clearT(){clearInterval(TM)}
+function lab(){app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>Linux Lab</b></div><p style="color:var(--m);margin-top:0">A free sandbox with a mini Linux. Try: <code>mkdir -p proj/src</code>, <code>echo hi &gt; a.txt</code>, <code>cat notes.txt | grep linux</code>, <code>chmod 755 a.txt</code>, <code>ls -la</code>. Use <code>nano file</code> for the editor.</p><div class="grid"><div>${edHTML}</div>${termHTML}</div></div>`;boot(null)}
+function login(){
+if(USER){app.innerHTML=`<div class="wrap"><div class="card auth"><h2>Welcome back, ${USER.username}</h2><p style="color:var(--m)">Your progress syncs to your account.</p><a class="btn glow" href="#dojo">Go to dojo</a></div></div>`;return}
+let mode='login';
+app.innerHTML=`<div class="wrap"><div class="card auth"><div class="mono" style="color:var(--g)">$ dojo auth</div><h2>Join the dojo</h2><div class="seg" role="tablist"><button type="button" role="tab" id="t1" aria-selected="true">Log in</button><button type="button" role="tab" id="t2" aria-selected="false">Sign up</button></div>
+<form id="af" novalidate><label>Username<input class="f" id="u" autocomplete="username" maxlength="16" autocapitalize="off" spellcheck="false"></label><label>Password<input class="f" id="pw" type="password" autocomplete="current-password" maxlength="72"></label><div id="ae" class="e" role="alert" style="min-height:24px"></div><button class="btn glow" id="as" style="width:100%">Log in</button></form>
+<p style="color:var(--m);font-size:14px">Username: 3-16 lowercase letters, numbers or _. Password: 8+ characters.</p><a href="#dojo">Continue as guest</a></div></div>`;
+const tab=m=>{mode=m;$('#t1').setAttribute('aria-selected',m==='login');$('#t2').setAttribute('aria-selected',m!=='login');$('#as').textContent=m==='login'?'Log in':'Create account';$('#pw').autocomplete=m==='login'?'current-password':'new-password';$('#ae').textContent=''};
+$('#t1').onclick=()=>tab('login');$('#t2').onclick=()=>tab('signup');$('#u').focus();
+$('#af').onsubmit=async e=>{e.preventDefault();const b=$('#as'),er=$('#ae');er.textContent='';b.disabled=true;
+try{const r=await fetch('/api/auth/'+(mode==='login'?'login':'register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#u').value.trim().toLowerCase(),password:$('#pw').value})});let j={};try{j=await r.json()}catch(x){}
+if(!r.ok){er.textContent=r.status===404?'No server here. Use guest mode, or run the full project with Docker.':(j.error||'Something went wrong');b.disabled=false;return}
+USER=j;setAu();await pull();location.hash='dojo'}catch(x){er.textContent='Cannot reach the server. Guest mode still works offline.';b.disabled=false}}}
+function chal(id){const ch=CH.find(c=>c.id===id);if(!ch)return dojo();let hn=0;const rw=()=>Math.max(10,ch.xp-hn*10),t0=Date.now();
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>${ch.title} <span class="chip">${ch.cat}</span></b><span class="mono" id="tm">00:00</span><span>Reward <b id="rw" style="flex:none">${rw()}</b> XP</span><button class="btn" id="ai">Ask AI Sensei (−10 XP)</button><button class="btn" id="hb">Hint (−10 XP)</button></div>
+<div class="grid"><div><div class="card"><p style="margin:0">${ch.story}</p></div><div id="hs"></div>${edHTML}</div>${termHTML}</div></div>`;
+$('#rw').textContent=rw();TM=setInterval(()=>$('#tm').textContent=fmt((Date.now()-t0)/1000|0),1000);
+$('#hb').onclick=()=>{if(hn>=ch.hints.length)return;const d=document.createElement('div');d.className='hint';d.textContent='Sensei: '+ch.hints[hn++];$('#hs').appendChild(d);$('#rw').textContent=rw();if(hn>=ch.hints.length)$('#hb').disabled=true};
+boot(ch);
+$('#ai').onclick=async()=>{const d=document.createElement('div');d.className='hint';d.textContent='Sensei is thinking...';$('#hs').appendChild(d);hn++;$('#rw').textContent=rw();
+const files={};ch.edit.forEach(e=>{const k=e[0]==='/'?e:HOME+'/'+e;if(fs[k])files[e]=fs[k].c});
+try{const r=await fetch('/api/sensei',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge:id,history:S.hist.slice(-8),files})});const j=await r.json();d.textContent='Sensei'+(j.source==='claude'?' (AI)':'')+': '+(j.answer||j.error)}catch(e){d.textContent='Sensei is offline here - use the Hint button.'}};
+S.onWin=()=>{clearT();const t=(Date.now()-t0)/1000|0,first=!SV.done[id],gain=first?rw():0,b0=belt(SV.xp);if(first){SV.done[id]={t,h:hn};SV.xp+=gain;if(SV.last!==day()){SV.streak=SV.last===day(1)?SV.streak+1:1;SV.last=day()}save();sync()}const b1=belt(SV.xp),nx=CH.find(c=>!SV.done[c.id]);
+setTimeout(()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-label="Challenge solved"><div class="big">+${gain} XP</div><h3 style="margin:4px 0">${first?'Bug squashed!':'Practice run complete'}</h3><p class="mono" style="color:var(--m);font-size:13px">Time ${fmt(t)} · Hints ${hn}${b1!==b0?' · New belt: <b style="color:'+b1[2]+'">'+b1[0]+'</b>':''}</p><p><b>What was wrong:</b> ${ch.why}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn glow" style="padding:10px 20px;font-size:16px" href="${nx?'#ch-'+nx.id:'#dojo'}">${nx?'Next challenge':'Back to dojo'}</a><button class="btn" id="cl">Keep playing</button></div></div>`;document.body.appendChild(m);$('#cl').focus();
+$('#cl').onclick=()=>m.remove();m.querySelector('a').onclick=()=>m.remove();
+for(let i=0;i<36;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`--x:${(Math.random()-.5)*600}px;--y:${Math.random()*400-250}px;background:${['#39ff88','#27e0ff','#ffd166'][i%3]}`;document.body.appendChild(c);setTimeout(()=>c.remove(),1500)}},500)}}
+function dojo(){const b=belt(SV.xp),nx=BELTS[BELTS.indexOf(b)+1],pct=nx?Math.round((SV.xp-b[1])/(nx[1]-b[1])*100):100,rows=[...RIV,['You',SV.xp]].sort((a,c)=>c[1]-a[1]);
+app.innerHTML=`<div class="wrap"><h2>Your dojo</h2>${USER?`<p style="color:var(--m);margin-top:-14px">Signed in as <b>${USER.username}</b>. Progress syncs to your account.</p>`:`<p style="color:var(--m);margin-top:-14px">Guest mode. <a href="#login">Log in</a> to sync progress and join the live leaderboard.</p>`}<div class="top2"><div class="card"><span>Level</span><b>${Math.floor(SV.xp/100)+1}</b></div><div class="card"><span>XP</span><b>${SV.xp}</b></div><div class="card"><span>Belt</span><b style="color:${b[2]}">${b[0]}</b><div class="bar"><i style="width:${pct}%"></i></div><small style="color:var(--m)">${nx?nx[1]-SV.xp+' XP to '+nx[0]:'Max belt'}</small></div><div class="card"><span>Streak</span><b>🔥 ${stk()}d</b></div></div>
+<h2>Challenges</h2><div class="cards">${CH.map(c=>`<a class="cc ${SV.done[c.id]?'done':''}" href="#ch-${c.id}"><span class="chip">${c.cat}</span><h3 style="margin:8px 0 4px">${c.title}</h3><span style="color:var(--m)">${c.xp} XP ${SV.done[c.id]?'· ✔ '+fmt(SV.done[c.id].t):''}</span></a>`).join('')}<a class="cc" href="#lab" style="border-style:dashed"><span class="chip">Sandbox</span><h3 style="margin:8px 0 4px">Linux Lab</h3><span style="color:var(--m)">Free practice, no goals</span></a></div>
+<h2 style="margin-top:44px">Badges</h2><ul class="bg">${BADGES.map(([n,d,f])=>`<li class="${f()?'on':''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
+<h2 style="margin-top:44px">Leaderboard</h2><div class="card lb" id="lb" style="margin-bottom:50px">${rows.map((r,i)=>`<div class="${r[0]==='You'?'me':''}"><span>${i+1}. ${r[0]}</span><span class="mono">${r[1]} XP</span></div>`).join('')}<small style="color:var(--m)">Rivals are sample data; your score is saved in this browser.</small></div></div>`;
+fetch('/api/leaderboard').then(r=>r.json()).then(L=>{if(!Array.isArray(L)||!L.length||!$('#lb'))return;$('#lb').innerHTML=L.map((r,i)=>`<div class="${r.id===SV.id?'me':''}"><span>${i+1}. ${r.id===SV.id?'You':r.name}</span><span class="mono">${r.xp} XP</span></div>`).join('')+'<small style="color:var(--m)">Live from the Dojo server.</small>'}).catch(()=>{})}
+function home(){app.innerHTML=`<section class="hero"><canvas aria-hidden="true"></canvas><div class="wrap hg"><div><h1>Break it.<br>Debug it.<br>Master it.</h1><p class="lead">Fix broken Docker, Nginx, Kubernetes, CI and Linux setups in a safe in-browser terminal. Earn XP, climb belts.</p><a class="btn glow" href="#dojo">Start Training</a> <a class="btn" href="#lab" style="margin-left:8px">Open Linux Lab</a></div>
+<div class="demo" aria-label="Animated terminal demo"><div class="tb"><i></i><i></i><i></i><span style="margin-left:8px">dojo@dojo</span></div><div class="bd" id="dm"></div></div></div></section>
+<div class="stats"><div><b>${CH.length}</b><span>challenges</span></div><div><b>5</b><span>belts</span></div><div><b>5</b><span>categories</span></div><div><b>30+</b><span>Linux commands</span></div></div>
+<section class="s"><div class="wrap"><h2>How it works</h2><div class="cards">
+<div class="card rv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg><h3>Pick a challenge</h3><p>Each one is a broken real-world setup with a short story.</p></div>
+<div class="card rv"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 10l3 2-3 2M12 15h5"/></svg><h3>Fix it in the terminal</h3><p>A mini Linux shell plus a config editor. Commands behave like the real thing.</p></div>
+<div class="card rv"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM7 6H3v2a4 4 0 004 4M17 6h4v2a4 4 0 01-4 4"/></svg><h3>Earn XP and belts</h3><p>Fewer hints and faster fixes pay more. Keep your streak alive.</p></div></div></div></section>
+<section class="s" style="padding-top:0"><div class="wrap"><h2>Belt progression</h2><div class="belts rv">${BELTS.map(b=>`<div class="bt" style="background:${b[2]}">${b[0]}<br><small>${b[1]} XP</small></div>`).join('')}</div></div></section>
+<footer>Debug Dojo · built for DevOps practice · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></footer>`;
+bg($('canvas'));demo($('#dm'));const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.2});document.querySelectorAll('.rv').forEach(e=>io.observe(e))}
+function bg(cv){const x=cv.getContext('2d'),red=matchMedia('(prefers-reduced-motion:reduce)').matches;let W,Hh,P=[];const rs=()=>{W=cv.width=cv.offsetWidth;Hh=cv.height=cv.offsetHeight;P=Array.from({length:Math.min(60,W/18|0)},()=>({x:Math.random()*W,y:Math.random()*Hh,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))};rs();addEventListener('resize',rs);
+(function f(){if(!document.body.contains(cv))return;x.clearRect(0,0,W,Hh);P.forEach((p,i)=>{if(!red){p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+Hh)%Hh}x.globalAlpha=.7;x.fillStyle='#39ff88';x.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<110){x.globalAlpha=(1-d/110)*.25;x.strokeStyle='#27e0ff';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});if(!red)requestAnimationFrame(f)})()}
+async function demo(el){const w=ms=>new Promise(r=>setTimeout(r,ms)),alive=()=>document.body.contains(el),line=c=>{const d=document.createElement('div');d.className='ln '+(c||'');el.appendChild(d);return d};
+const type=async t=>{const d=line();d.innerHTML='<span class="pr">$</span> <span></span><i class="cur"></i>';const s=d.children[1];for(const c of t){if(!alive())return;s.textContent+=c;await w(55)}d.querySelector('.cur').remove();await w(400)};
+while(alive()){el.innerHTML='';await type('docker run -d -p 80:300 api');if(!alive())return;line('e').textContent='Error: api does not listen on port 300 (exposes 3000)';await w(1500);await type('docker run -d -p 80:3000 api');if(!alive())return;line('o').textContent='✔ api is up on :80';const x=document.createElement('div');x.className='xp';x.textContent='+50 XP';el.parentElement.appendChild(x);await w(2800);x.remove();await w(500)}}
+function route(){clearT();document.querySelectorAll('.modal').forEach(m=>m.remove());const h=location.hash.slice(1)||'home';if(h==='dojo')dojo();else if(h==='lab')lab();else if(h==='login')login();else if(h.startsWith('ch-'))chal(h.slice(3));else home();scrollTo(0,0)}
+addEventListener('hashchange',route);setAu();route();init();
+</script></body></html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b10"><title>Debug Dojo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b10;--p:#0d141c;--l:#1c2a37;--t:#dbe7f0;--m:#8196a8;--g:#39ff88;--c:#27e0ff;--r:#ff6b78;--y:#ffd166;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--t);font:16px/1.6 'Bricolage Grotesque',system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--c);text-decoration:none}
+:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.mono,.term,textarea{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;max-width:1120px;margin:0 auto;position:relative;z-index:5}
+header b{font-size:20px;color:var(--g);text-shadow:0 0 18px #39ff8866}
+header nav{display:flex;gap:18px}header nav a{color:var(--t)}
+.btn{display:inline-block;border:1px solid var(--l);background:var(--p);color:var(--t);padding:10px 18px;border-radius:10px;font:600 15px inherit;font-family:inherit;cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--c);transform:translateY(-2px)}
+.btn.glow{background:linear-gradient(135deg,var(--g),var(--c));color:#04120a;border:0;padding:15px 30px;font-size:18px;font-weight:800;box-shadow:0 0 28px #39ff8888,0 0 60px #27e0ff44;animation:pl 2.6s infinite}
+@keyframes pl{50%{box-shadow:0 0 40px #39ff88cc,0 0 90px #27e0ff66}}
+.hero{position:relative;padding:50px 0 80px;overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(#1c2a3755 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,#1c2a3755 1px,transparent 1px) 0 0/44px 44px;-webkit-mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%)}
+.hg{position:relative;display:grid;gap:40px;align-items:center}
+@media(min-width:900px){.hg{grid-template-columns:1.05fr 1fr}}
+h1{font-size:clamp(40px,7vw,76px);line-height:1;margin:0 0 18px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,#fff,var(--g) 45%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:var(--m);font-size:19px;max-width:520px;margin:0 0 28px}
+.demo{position:relative;background:#05090dcc;border:1px solid var(--l);border-radius:14px;box-shadow:0 0 60px #27e0ff22;overflow:hidden}
+.demo .tb,.term .tb{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--l);font-size:12px;color:var(--m);align-items:center}
+.tb i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.tb i+i{background:#febc2e}.tb i+i+i{background:#28c840}
+.demo .bd{padding:16px;min-height:150px;font:14px/1.7 'JetBrains Mono',monospace}
+.ln.e,.e{color:var(--r)}.ln.o,.o{color:var(--g)}.pr{color:var(--g)}
+.cur{display:inline-block;width:8px;height:15px;background:var(--g);vertical-align:-2px;animation:bk 1s steps(1) infinite}@keyframes bk{50%{opacity:0}}
+.xp{position:absolute;right:16px;top:50px;background:var(--g);color:#04120a;font-weight:800;padding:6px 14px;border-radius:999px;box-shadow:0 0 24px var(--g);animation:up 2.4s forwards}
+@keyframes up{0%{transform:translateY(20px);opacity:0}15%{transform:none;opacity:1}85%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+.stats{display:flex;flex-wrap:wrap;justify-content:space-around;gap:20px;padding:26px 20px;border-block:1px solid var(--l);background:#0a1118}
+.stats div{text-align:center}.stats b{display:block;font-size:34px;color:var(--c)}.stats span{color:var(--m)}
+section.s{padding:70px 0}h2{font-size:clamp(28px,4vw,40px);margin:0 0 30px;letter-spacing:-.02em}
+.cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:22px;transition:.25s}
+.cards .card:hover,.cc:hover{border-color:var(--g);box-shadow:0 0 30px #39ff8822;transform:translateY(-4px)}
+.card svg{width:40px;height:40px;stroke:var(--g);fill:none;stroke-width:1.6;margin-bottom:10px}
+.card h3{margin:0 0 6px}.card p{margin:0;color:var(--m)}
+.belts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bt{flex:1;min-width:120px;padding:16px 10px;border-radius:10px;text-align:center;font-weight:800;color:#05090d}
+.rv{opacity:0;transform:translateY(24px);transition:.6s}.rv.in{opacity:1;transform:none}
+footer{border-top:1px solid var(--l);padding:28px 20px;text-align:center;color:var(--m)}
+.top2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0 24px}
+.top2 .card b{font-size:26px;display:block}.bar{height:8px;background:var(--l);border-radius:9px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--c))}
+.cc{display:block;color:var(--t);background:var(--p);border:1px solid var(--l);border-radius:14px;padding:18px;transition:.25s}
+.chip{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--c);color:var(--c)}
+.done{border-color:#39ff8866}.done .chip{border-color:var(--g);color:var(--g)}
+ul.bg{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+ul.bg li{padding:12px;border:1px dashed var(--l);border-radius:10px;opacity:.45}ul.bg li.on{opacity:1;border:1px solid var(--y)}ul.bg span{display:block;font-size:13px;color:var(--m)}
+.lb div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--l)}.lb .me{color:var(--g);font-weight:800}
+.bar2{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:10px 0 16px}.bar2 b{flex:1}
+.grid{display:grid;gap:16px}@media(min-width:960px){.grid{grid-template-columns:1fr 1.25fr}}
+.term{background:#04080c;border:1px solid var(--l);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;height:min(70vh,560px);min-height:360px}
+.out{flex:1;overflow:auto;padding:12px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--l);font-size:13.5px}.in span{color:var(--g);white-space:nowrap}
+.in input{flex:1;min-width:0;background:none;border:0;color:var(--t);font:inherit;outline:0}
+textarea{width:100%;height:230px;background:#04080c;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:10px;font-size:13px;resize:vertical}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--m);padding:6px 10px;cursor:pointer;font:13px 'JetBrains Mono',monospace}.tabs button[aria-selected=true]{color:var(--g);border-color:var(--g)}
+.hint{border-left:3px solid var(--y);padding:6px 12px;margin:8px 0;color:#f3e3b8;background:#ffd16610}
+.modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20;padding:16px}
+.modal .card{max-width:520px;width:100%;border-color:var(--g);box-shadow:0 0 60px #39ff8855;animation:pop .4s}@keyframes pop{from{transform:scale(.85);opacity:0}}
+.big{font-size:44px;font-weight:800;color:var(--g)}
+.cf{position:fixed;top:40%;left:50%;width:8px;height:8px;border-radius:2px;animation:cf 1.4s ease-out forwards;z-index:21}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+.auth{max-width:420px;margin:30px auto 60px;box-shadow:0 0 50px #27e0ff22}.auth h2{margin:4px 0 12px}
+.seg{display:flex;gap:6px;margin:6px 0 10px}.seg button{flex:1;padding:9px;background:var(--bg);border:1px solid var(--l);color:var(--m);border-radius:8px;cursor:pointer;font:inherit}.seg button[aria-selected=true]{color:var(--g);border-color:var(--g)}
+label{display:block;margin:12px 0;color:var(--m);font-size:14px}.f{width:100%;margin-top:4px;background:#04080c;border:1px solid var(--l);border-radius:8px;padding:11px;color:var(--t);font:15px 'JetBrains Mono',monospace}.f:focus{border-color:var(--c);outline:0;box-shadow:0 0 0 3px #27e0ff33}
+.btn.sm{padding:4px 10px}
+.chat{margin-top:14px}.cmsg{padding:6px 0;border-bottom:1px solid var(--l);font-size:14px;white-space:pre-wrap}.cmsg.me{color:var(--c)}.cmsg.ai{color:var(--t)}
+[data-theme=light]{--bg:#f3f6f9;--p:#fff;--l:#d5dee6;--t:#14202b;--m:#51657a;--g:#0a9d57;--c:#0a7f9f;--r:#c62f3d;--y:#b7791f;color-scheme:light}
+[data-theme=light] .term,[data-theme=light] textarea,[data-theme=light] .demo{--t:#dbe7f0;--m:#8196a8;--g:#39ff88;--c:#27e0ff}
+[data-theme=light] h1{background:linear-gradient(120deg,#0b2e22,#0a7a4a 50%,#0a6f86);-webkit-background-clip:text;background-clip:text}
+[data-theme=light] .stats{background:#e8eef3}[data-theme=light] .btn.glow{color:#fff}
+.sec{margin:28px 0}.sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}.sh h3{margin:0}.sh small{color:var(--m)}
+.sec.cleared .bar i{background:linear-gradient(90deg,var(--y),var(--g))}.sec.cleared .sh h3{color:var(--y)}
+.stars{color:var(--y);letter-spacing:2px;font-size:13px}
+#ms ul{list-style:none;padding:0;margin:10px 0 0}#ms li{padding:3px 0;color:var(--m);transition:.3s}#ms li.ok{color:var(--g)}
+.les td{vertical-align:top}.tutor-note{color:var(--m);font-size:13px}
+.cmd{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--l)}.cmd:last-child{border:0}.cmd code{color:var(--c)}
+/* ---- v7 polish: professional surfaces + motion ---- */
+:root{--r2:18px;--sh1:0 1px 0 #ffffff08 inset,0 10px 28px -16px #000c;--sh2:0 24px 60px -24px #000d;--ease:cubic-bezier(.2,.8,.2,1)}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(40% 35% at 18% 12%,#27e0ff14,transparent 70%),radial-gradient(35% 40% at 85% 20%,#39ff8812,transparent 70%),radial-gradient(45% 40% at 60% 95%,#7c5cff10,transparent 70%);animation:drift 28s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(-3%,2%,0) scale(1.06)}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+@keyframes pageIn{from{opacity:0}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes barIn{from{width:0}}
+@keyframes lineIn{from{opacity:0;transform:translateX(-6px)}}
+@keyframes sheen{to{background-position:-200% 0}}
+@keyframes textflow{to{background-position:-220% 0}}
+@keyframes floaty{to{transform:translate(-40px,60px) scale(1.15)}}
+@keyframes ping{50%{opacity:.35;transform:scale(.75)}}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+@keyframes fade{from{opacity:0}}
+header.top{position:sticky;top:0;z-index:30;max-width:none;padding:12px max(20px,calc((100vw - 1120px)/2));background:#070b10cc;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+header.top.scrolled{border-color:var(--l);box-shadow:0 12px 30px -22px #000}
+header nav{align-items:center}
+header nav a{position:relative;padding:6px 2px;color:var(--m);font-weight:600;transition:color .2s}
+header nav a:hover,header nav a.on{color:var(--t)}
+header nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--c));transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+header nav a:hover::after,header nav a.on::after{transform:scaleX(1)}
+#sp{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;background:linear-gradient(90deg,var(--g),var(--c));box-shadow:0 0 12px var(--g);transition:width .12s linear;pointer-events:none}
+#app.enter{animation:pageIn .45s var(--ease)}
+#app.enter .cards>*,#app.enter .top2>*,#app.enter .stats>*,#app.enter .sec{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0)*55ms)}
+.card,.cc{border-radius:var(--r2);box-shadow:var(--sh1)}
+.cc{position:relative;overflow:hidden;transition:transform .35s var(--ease),border-color .3s,box-shadow .35s}
+.cc::before{content:"";position:absolute;inset:0;background:radial-gradient(260px 130px at var(--mx,50%) var(--my,0%),#39ff8822,transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.cc:hover::before{opacity:1}
+.cc:hover{transform:translateY(-5px);box-shadow:var(--sh2),0 0 0 1px #39ff8855}
+.cc.done::after{content:"✓";position:absolute;top:12px;right:14px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:#04120a;font-weight:800;font-size:13px;animation:pop .5s var(--ease) both}
+.chip{background:#27e0ff10;letter-spacing:.02em}
+.btn{position:relative;overflow:hidden;border-radius:12px;font-weight:600;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s,background .2s}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.glow{background:linear-gradient(110deg,var(--g),var(--c) 45%,var(--g));background-size:200% 100%;animation:pl 2.6s infinite,sheen 6s linear infinite}
+.btn .rp{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:#ffffff55;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+h2{font-weight:800;letter-spacing:-.025em}
+.wrap>h2::after{content:"";display:block;width:46px;height:3px;border-radius:3px;margin-top:10px;background:linear-gradient(90deg,var(--g),var(--c));transform-origin:left;animation:grow .7s .15s var(--ease) both}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:6px 13px;margin-bottom:18px;border:1px solid var(--l);border-radius:99px;background:#ffffff06;color:var(--m);font-size:13px;font-weight:600;animation:rise .7s var(--ease) both}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g);animation:ping 2s infinite}
+h1{background:linear-gradient(110deg,#fff 0%,var(--g) 35%,var(--c) 65%,#fff 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise .8s .05s var(--ease) both,textflow 9s linear infinite}
+.hero .lead{animation:rise .8s .2s var(--ease) both}
+.hero .hg>div:first-child>.btn{animation:rise .8s .35s var(--ease) both}
+.hero .btn.glow{animation:rise .8s .35s var(--ease) both,pl 2.6s 1s infinite,sheen 6s linear infinite}
+.hero::after{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,#27e0ff22,transparent 65%);filter:blur(10px);animation:floaty 14s ease-in-out infinite alternate;pointer-events:none}
+.demo{animation:rise .9s .25s var(--ease) both}
+.stats b{font-variant-numeric:tabular-nums;background:linear-gradient(120deg,var(--c),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.top2 .card{position:relative;overflow:hidden}
+.top2 .card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--g),var(--c));opacity:.85}
+.top2 .card b{font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px}
+.bar i{border-radius:99px;box-shadow:0 0 12px #39ff8866;transition:width .8s var(--ease);animation:barIn 1s var(--ease) both}
+#ms .bar i{animation:none}
+.term{border-radius:var(--r2);box-shadow:var(--sh2);transition:box-shadow .3s,border-color .3s}
+.term:focus-within{border-color:#27e0ff99;box-shadow:0 0 0 1px #27e0ff55,0 24px 64px -24px #27e0ff55}
+.term .tb{background:linear-gradient(180deg,#0e1620,#0a1119)}
+.out div{animation:lineIn .22s var(--ease) both}
+.in span{text-shadow:0 0 12px #39ff8866}
+.in input{caret-color:var(--g)}
+.out::-webkit-scrollbar{width:8px}.out::-webkit-scrollbar-thumb{background:#1c2a37;border-radius:8px}
+.cmsg{animation:rise .3s var(--ease) both;padding:8px 10px;margin:6px 0;border:0;border-radius:10px;background:#ffffff06}
+.cmsg.me{background:#27e0ff12}
+.hint{animation:rise .35s var(--ease) both;border-radius:0 10px 10px 0}
+.auth{animation:rise .6s var(--ease) both}
+#cv{box-shadow:var(--sh2)}
+.f{transition:border-color .2s,box-shadow .2s}
+.modal{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:fade .25s both}
+.big{background:linear-gradient(120deg,var(--g),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+[data-theme=light] body::before{opacity:.45}
+[data-theme=light] header.top{background:#f3f6f9cc;background:color-mix(in srgb,var(--bg) 78%,transparent)}
+[data-theme=light] .card,[data-theme=light] .cc{--sh1:0 1px 2px #0001,0 10px 26px -18px #0004}
+[data-theme=light] .stats b{background:linear-gradient(120deg,#0a7f9f,#0a9d57);-webkit-background-clip:text;background-clip:text}
+@media(max-width:640px){header.top{flex-wrap:wrap;gap:6px}header nav{gap:12px;flex-wrap:wrap}.hero::after{display:none}}
+</style></head><body>
+<header class="top"><a href="#home" class="mono"><b>&gt;_ Debug Dojo</b></a><nav><a href="#learn">Learn</a><a href="#cmds">Commands</a><a href="#dojo">Dojo</a><a href="#lab">Linux Lab</a><a href="#login" id="au">Log in</a><button class="btn sm" id="th" aria-label="Toggle light or dark theme">◐</button><button class="btn sm" id="sn" aria-label="Toggle typing sound" aria-pressed="false">🔇</button></nav></header>
+<main id="app"></main>
+<script>
+const $=(s,r=document)=>r.querySelector(s),HOME='/home/dojo';
+let SV={xp:0,done:{},streak:0,last:''},S,fs,TM;
+try{Object.assign(SV,JSON.parse(localStorage.getItem('dd1')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('dd1',JSON.stringify(SV))}catch(e){}};
+const day=(o=0)=>new Date(Date.now()-o*864e5).toISOString().slice(0,10);
+const BELTS=[['White',0,'#e8eef3'],['Yellow',100,'#ffd166'],['Green',300,'#39ff88'],['Brown',550,'#c08457'],['Black',850,'#6b7c8c']];
+const BONUS=50;
+const belt=x=>BELTS.filter(b=>b[1]<=x).pop();
+const dn=()=>Object.keys(SV.done).length,fmt=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const stk=()=>SV.last===day()||SV.last===day(1)?SV.streak:0;
+const BADGES=[['First Blood','Solve any challenge',()=>dn()>0],['Clean Run','Solve with zero hints',()=>Object.values(SV.done).some(d=>d.h===0)],['Speed Demon','Solve in under 90s',()=>Object.values(SV.done).some(d=>d.t<90)],['On Fire','3-day streak',()=>stk()>=3],['Dojo Master','Solve every challenge',()=>dn()>=CH.length],['Student','Finish every Academy lesson',()=>typeof LESSONS!=='undefined'&&LESSONS.every(l=>SV.learn&&SV.learn[l.id])]];
+const RIV=[['neo_root',520],['kernel_kat',340],['sudo_sam',190],['bash_bunny',90]];
+const win=()=>{if(S&&S.ch&&!S.won){S.won=1;S.onWin&&S.onWin()}};
+/* ---------- challenges ---------- */
+const AUTHLOG=(()=>{const L=[],t=n=>'Oct 23 10:'+String(n).padStart(2,'0')+':00';let n=0;for(let i=0;i<14;i++)L.push(`${t(n++)} dojo sshd[812]: Failed password for root from 203.0.113.9 port ${4000+i} ssh2`);for(let i=0;i<3;i++)L.push(`${t(n++)} dojo sshd[815]: Failed password for admin from 198.51.100.7 port ${5000+i} ssh2`);L.push(`${t(n++)} dojo sshd[820]: Accepted publickey for dojo from 10.0.0.5 port 6001 ssh2`);L.push(`${t(n++)} dojo sshd[821]: Failed password for dojo from 10.0.0.5 port 6002 ssh2`);return L.join('\n')+'\n'})();
+const CH=[
+{id:'perm',cat:'Permissions',title:'Permission denied',xp:50,edit:[],story:'Your deploy script refuses to run. Run it, read the error, then fix it the Linux way.',files:{'deploy.sh':{c:'#!/bin/bash\necho "Deploying build 42"\n',m:'rw-r--r--',run:()=>{win();return 'Deploying build 42...\n✔ Deployed to production!'}}},hints:['Try ./deploy.sh first. Then ls -l deploy.sh and look at the x bits.','The file has no execute permission.','chmod +x deploy.sh'],why:'Linux only runs a file if its execute bit is set. ls -l showed -rw-r--r-- (no x). chmod +x adds execute permission so the shell may launch it.'},
+{id:'sshkey',cat:'Permissions',title:'Unprotected private key',xp:60,edit:[],story:'You cannot log in to the prod server. SSH keeps rejecting your key. Try: ssh prod',files:{'.ssh/id_rsa':{c:'-----BEGIN DEMO KEY-----\nnot-a-real-key\n',m:'rw-r--r--'}},hints:['Read the SSH warning carefully. Who is able to read the key right now?','A private key must be readable by its owner only.','chmod 600 ~/.ssh/id_rsa then ssh prod'],why:'SSH refuses a private key that other users can read, because anyone on the machine could copy it and impersonate you. Mode 600 (rw-------) leaves access to the owner only.'},
+{id:'secret',cat:'Permissions',title:'Secrets open to everyone',xp:60,edit:[],story:'A security audit flagged your home folder. Run ./audit.sh, see what is exposed, and lock it down.',files:{'db_password.txt':{c:'S3cr3t!\n',m:'rw-rw-rw-'},'backup.sql':{c:'-- full database dump\n',m:'rwxrwxrwx'},'audit.sh':{c:'#!/bin/sh\n',m:'rwxr-xr-x',run:()=>{const a=fs[HOME+'/db_password.txt'],b=fs[HOME+'/backup.sql'],o1=!!a&&a.m==='rw-------',o2=!!b&&b.m.slice(6)==='---',o=[o1?'✔ db_password.txt is private (600)':'✘ db_password.txt is accessible to others: '+(a?a.m:'missing'),o2?'✔ backup.sql is not world-accessible':'✘ backup.sql is world-accessible: '+(b?b.m:'missing')];if(o1&&o2){win();o.push('✔ audit passed')}return o.join('\n')}}},hints:['ls -l shows who can read and write each file: owner, group, others.','Passwords: owner only. Backups: nothing for others.','chmod 600 db_password.txt and chmod 640 backup.sql, then ./audit.sh'],why:'The last three permission characters are "others", meaning every user on the system. Passwords should be 600 (owner only), and backups must never be readable by others (640 or 600).'},
+{id:'sshd',cat:'Hardening',title:'Harden the SSH server',xp:80,edit:['/etc/ssh/sshd_config'],story:'Auditors call your SSH server a soft target. Run ./ssh-audit.sh, fix /etc/ssh/sshd_config in the editor, save, and audit again.',files:{'/etc/ssh/sshd_config':{c:'Port 22\nPermitRootLogin yes\nPasswordAuthentication yes\nPermitEmptyPasswords yes\nX11Forwarding yes\n'},'ssh-audit.sh':{c:'#!/bin/sh\n',m:'rwxr-xr-x',run:()=>{const f=fs['/etc/ssh/sshd_config'],v={};(f?f.c:'').split('\n').forEach(l=>{const t=l.trim(),m=t.match(/^(\w+)\s+(\S+)/);if(m&&t[0]!=='#')v[m[1].toLowerCase()]=m[2].toLowerCase()});let ok=true;const o=[['permitrootlogin','Root login disabled'],['passwordauthentication','Password logins disabled (keys only)'],['permitemptypasswords','Empty passwords rejected']].map(([k,t])=>{const g=v[k]==='no';if(!g)ok=false;return (g?'✔ ':'✘ ')+t+(g?'':' (now: '+(v[k]||'unset')+')')});if(ok){win();o.push('✔ sshd hardened')}return o.join('\n')}}},hints:['Run ./ssh-audit.sh and compare each failing line with the config.','Three directives need the value no.','PermitRootLogin no, PasswordAuthentication no, PermitEmptyPasswords no (then Save)'],why:'Root login and password logins are what brute-force bots attack. Setting them to no forces key-based login for normal users, and rejecting empty passwords closes the easiest hole.'},
+{id:'leak',cat:'Secrets',title:'Leaked cloud key',xp:80,edit:['app/config.js'],story:'Your repo in ~/app contains secrets. Find them with grep -r, remove the key from the code, and make sure .env is never committed. Verify with ./scan.sh inside app.',files:{'app/config.js':{c:'// app config\nconst AWS_KEY = "AKIAIOSFODNN7EXAMPLE";\nmodule.exports = { region: "ap-south-1", key: AWS_KEY };\n'},'app/.env':{c:'DB_PASS=hunter2\n'},'app/scan.sh':{c:'#!/bin/sh\n',m:'rwxr-xr-x',run:()=>{const A=HOME+'/app',o1=!Object.keys(fs).some(k=>k.startsWith(A+'/')&&!fs[k].d&&/AKIA[0-9A-Z]{16}/.test(fs[k].c)),g=fs[A+'/.gitignore'],o2=!!g&&/^\.env$/m.test(g.c),o=[(o1?'✔':'✘')+' no cloud keys in source files',(o2?'✔':'✘')+' .env is listed in .gitignore'];if(o1&&o2){win();o.push('✔ repo is clean')}else o.push('✘ secret scan failed');return o.join('\n')}}},hints:['cd app, then grep -r KEY . and grep -ri pass .','Replace the literal key in config.js with process.env.AWS_KEY, and Save.','echo .env > .gitignore then ./scan.sh'],why:'Anything committed to git stays in history, so keys must live in environment variables, never in source. .gitignore keeps local secret files like .env out of the repo. (A leaked real key must also be rotated.)'},
+{id:'brute',cat:'Incident',title:'Brute-force attack',xp:100,edit:[],story:'Someone is hammering SSH. Read /var/log/auth.log, find the IP with the most failed logins, and block it with the firewall. Do not block your admin (10.0.0.5).',files:{'/var/log/auth.log':{c:AUTHLOG}},check:()=>(S.fw||[]).includes('203.0.113.9')&&!(S.fw||[]).includes('10.0.0.5'),hints:['grep Failed /var/log/auth.log shows the failed attempts.',"Count per IP: grep Failed /var/log/auth.log | awk '{print $11}' | sort | uniq -c | sort -rn",'sudo ufw deny from <the top IP>'],why:'Counting failed logins per source IP exposes the attacker (203.0.113.9 had 14 attempts). A firewall deny rule drops its traffic before SSH sees it. Always double check you are not blocking your own admin address.'},
+{id:'miner',cat:'Incident',title:'Rogue process',xp:80,edit:[],story:'The server is crawling and the fans scream. Find the process eating the CPU, stop it, and delete the file it runs from so it cannot return.',files:{'/tmp/.kswapd0':{c:'#!/bin/sh\n# not a real kernel thread\n',m:'rwxr-xr-x'}},procs:[{pid:666,u:'www-data',c:'98.7',cmd:'/tmp/.kswapd0 --pool xmr.evil.example'},{pid:731,u:'dojo',c:'0.0',cmd:'sleep 3000'}],check:()=>!S.procs.some(p=>p.pid===666)&&!fs['/tmp/.kswapd0'],hints:['ps aux and look at the CPU column and the command.','A hidden file in /tmp is running. ls -la /tmp','kill -9 666 and rm /tmp/.kswapd0'],why:'ps aux exposed one process at 98% CPU running a hidden file in /tmp, a classic malware spot. Killing the process stops it, and deleting the file stops a restart. In real life you would also find out how it got in.'},
+{id:'dockerfile',cat:'DevSecOps',title:'Harden the Dockerfile',xp:100,edit:['Dockerfile'],story:'Your image works, but the security review is red: a secret baked into a layer, a root user, SSH exposed and a floating base tag. Run hadolint Dockerfile, fix every finding in the editor, save, and lint again.',files:{'Dockerfile':{c:'FROM node:latest\nWORKDIR /app\nENV DB_PASSWORD=hunter2\nCOPY . .\nRUN npm ci\nEXPOSE 22 3000\nCMD ["node","server.js"]\n'}},hints:['Run hadolint Dockerfile and fix the findings one by one.','Secrets must never live in ENV/ARG (they stay in image layers). Pin the base tag, expose only 3000, and add a non-root USER.','FROM node:20-alpine, delete the ENV line, RUN adduser -D app, USER app, EXPOSE 3000'],why:'ENV/ARG secrets are readable by anyone who pulls the image, so they are passed at runtime instead. A container running as root makes any escape far worse, an exposed port 22 invites attacks, and :latest changes under you, so pin an exact tag.'},
+{id:'trivy',cat:'DevSecOps',title:'Read the Trivy report',xp:80,edit:['Dockerfile'],story:'CI blocked your release because of a scary Trivy scan. Run trivy image . , read the Fixed Version column, and fix the image so it passes.',files:{'Dockerfile':{c:'FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm ci\nUSER node\nEXPOSE 3000\nCMD ["node","server.js"]\n'}},hints:['Run trivy image . and look at Severity and Fixed Version.','Most findings come from the old base image, not your code.','Change the first line to FROM node:20-alpine, save, and scan again'],why:'Scanners list which package is vulnerable and which version fixes it. Here almost everything came from an end-of-life base image, so moving to a maintained tag (node:20-alpine) cleared all HIGH and CRITICAL findings at once.'},
+{id:'deps',cat:'DevSecOps',title:'Vulnerable dependencies',xp:80,edit:['package.json'],story:'npm audit is failing in CI. Run npm audit, read which version fixes each package, update package.json in the editor, save, and audit again.',files:{'package.json':{c:'{\n  "name": "shop",\n  "dependencies": {\n    "express": "^4.21.0",\n    "lodash": "4.17.15",\n    "minimist": "~1.2.0"\n  }\n}\n'}},hints:['npm audit lists each package and the version that fixes it.','Raise lodash and minimist to at least the fixed versions.','"lodash": "^4.17.21" and "minimist": "^1.2.8", then npm audit'],why:'Old dependency versions carry known vulnerabilities (lodash command injection, minimist prototype pollution). The audit report names the first safe version; upgrading to it or newer removes the risk without touching your own code.'},
+{id:'iam',cat:'DevSecOps',title:'Over-powered IAM policy',xp:100,edit:['policy.json'],story:'The image-resizer service only needs to read files from the bucket dojo-assets, but its policy hands it the whole cloud. Fix policy.json, save, then run ./audit-iam.sh.',files:{'policy.json':{c:'{\n  "Version": "2012-10-17",\n  "Statement": [\n    { "Effect": "Allow", "Action": "*", "Resource": "*" }\n  ]\n}\n'},'audit-iam.sh':{c:'#!/bin/sh\n',m:'rwxr-xr-x',run:()=>{let p;try{p=JSON.parse(fs[HOME+'/policy.json'].c)}catch(e){return '✘ policy.json is not valid JSON'}const A=new Set(),R=new Set(),bad=[];[].concat(p.Statement||[]).forEach(st=>{if(st.Effect!=='Allow')return;[].concat(st.Action||[]).forEach(x=>{A.add(x);if(x==='*'||/:\*$/.test(x))bad.push('wildcard action '+x)});[].concat(st.Resource||[]).forEach(x=>{R.add(x);if(x==='*')bad.push('wildcard resource *')})});const okA=A.has('s3:GetObject')&&[...A].every(x=>['s3:GetObject','s3:ListBucket'].includes(x)),okR=R.size>0&&[...R].every(x=>['arn:aws:s3:::dojo-assets','arn:aws:s3:::dojo-assets/*'].includes(x)),o=[bad.length?'✘ too broad: '+[...new Set(bad)].join(', '):'✔ no wildcards',okA?'✔ only the needed s3 read actions':'✘ allow only s3:GetObject (and optionally s3:ListBucket)',okR?'✔ scoped to the dojo-assets bucket':'✘ resource must be the dojo-assets bucket, not everything'];if(!bad.length&&okA&&okR){win();o.push('✔ least privilege achieved')}return o.join('\n')}}},hints:['Run ./audit-iam.sh and read what is too broad.','Least privilege: only the needed action, only the needed resource, no *.','Action ["s3:GetObject"], Resource "arn:aws:s3:::dojo-assets/*"'],why:'A wildcard policy means one leaked key controls everything. Least privilege grants only the actions a service really uses (read objects) on only the resources it needs (one bucket), which limits the damage of any compromise.'},
+{id:'sqli',cat:'DevSecOps',title:'SQL injection',xp:100,edit:['login.js'],story:'A pentester logged in as admin using the name \' OR \'1\'=\'1. The login query glues user input into SQL. Fix login.js, save, and run ./sqltest.sh.',files:{'login.js':{c:'// login handler\nfunction login(db, name, pass) {\n  const sql = "SELECT * FROM users WHERE name = \'" + name + "\' AND pass = \'" + pass + "\'";\n  return db.query(sql);\n}\n'},'sqltest.sh':{c:'#!/bin/sh\n',m:'rwxr-xr-x',run:()=>{const c=(fs[HOME+'/login.js']||{c:''}).c,glued=/['"]\s*\+\s*(name|pass)\b|\b(name|pass)\s*\+\s*['"]|\$\{\s*(name|pass)/.test(c),param=/SELECT[^;\n]*(\?|\$1)/.test(c)&&/\[\s*(name|pass)/.test(c),pl="' OR '1'='1";if(glued||!param)return 'payload: '+pl+'\n✘ input is glued into the SQL: the payload changes the query (injection works) and returns ALL users'+(glued?'':'\n✘ no placeholders found (use ? and pass [name, pass])');win();return 'payload: '+pl+'\n✔ payload is treated as plain text, 0 rows returned\n✔ query uses placeholders'}}},hints:['Never build SQL by joining strings with user input.','Use placeholders (?) in the query and pass the values separately.','const sql = "SELECT * FROM users WHERE name = ? AND pass = ?"; return db.query(sql, [name, pass]);'],why:'When input is concatenated into SQL, an attacker can change the meaning of the query. With placeholders the database receives the query and the values separately, so the payload is only ever data and never code.'},
+{id:'ports',cat:'DevSecOps',title:'Close the open ports',xp:80,edit:[],story:'A scan found your server exposing more than it should. Run ss -tlnp, decide what must stay public (SSH 22, web 80), and block the databases (3306 MySQL, 6379 Redis) with the firewall.',files:{},check:()=>{const p=S.fwp||[];return p.includes('3306')&&p.includes('6379')&&!p.includes('22')&&!p.includes('80')},hints:['ss -tlnp lists listening services. Which ones are databases?','ufw deny <port> blocks a port. Do not block 22 or 80.','sudo ufw deny 3306 and sudo ufw deny 6379'],why:'Databases and caches are meant for your app, not the internet. Exposed MySQL and Redis ports are scanned within minutes of going online. Blocking them while keeping SSH and web reachable shrinks the attack surface.'}
+];
+/* ---------- virtual filesystem + shell ---------- */
+const dirname=k=>k.replace(/\/[^/]*$/,'')||'/',kids=p=>Object.keys(fs).filter(k=>k!==p&&dirname(k)===p);
+const res=p=>{p=p||'.';if(p[0]!=='/')p=S.cwd+'/'+p;const o=[];for(const s of p.split('/')){if(!s||s==='.')continue;s==='..'?o.pop():o.push(s)}return '/'+o.join('/')};
+function mkfs(x){const f={};const d=p=>{if(!f[p]){f[p]={d:1,m:'rwxr-xr-x'};if(p!=='/')d(dirname(p))}};d('/');
+const base={'/home/dojo/notes.txt':{c:'welcome to the dojo\nlinux is fun\npractice every day\n'},'/etc/hostname':{c:'dojo\n'},'/etc/passwd':{c:'root:x:0:0:root:/root:/bin/bash\ndojo:x:1000:1000:Dojo Student:/home/dojo:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\n'},'/var/log/syslog':{c:'boot ok\nnginx started\nerror: disk 91%\nsshd listening\n'},'/tmp/.keep':{c:''}};
+const all={...base};for(const k in x)all[k[0]==='/'?k:HOME+'/'+k]=x[k];
+for(const k in all){d(dirname(k));f[k]={m:'rw-r--r--',...all[k]}}return f}
+const MAN={
+ls:['ls [-l] [-a] [path]','Lists files. -l shows permissions and sizes, -a also shows hidden files (names starting with a dot).','ls -la ~'],
+cd:['cd [folder]','Changes your current folder. cd .. goes up one level, cd ~ (or just cd) goes home.','cd projects'],
+pwd:['pwd','Prints the folder you are in right now.','pwd'],
+cat:['cat file...','Prints a whole file on the screen.','cat notes.txt'],
+echo:['echo text','Prints text. With > it writes to a file, with >> it adds to the end of a file.','echo hello > greet.txt'],
+mkdir:['mkdir [-p] folder','Makes a folder. -p also makes missing parent folders.','mkdir -p proj/src'],
+touch:['touch file','Makes an empty file (or updates its time).','touch a.txt'],
+rm:['rm [-r] path','Deletes files. -r deletes folders and everything inside. There is no recycle bin!','rm -r old-folder'],
+cp:['cp source target','Copies a file.','cp a.txt b.txt'],
+mv:['mv source target','Moves or renames a file.','mv b.txt c.txt'],
+chmod:['chmod mode file','Changes permissions. +x makes a file runnable. Numbers: 4=read 2=write 1=execute (owner, group, others).','chmod 600 secret.txt'],
+grep:['grep [-i] [-n] [-v] [-r] pattern [file]','Finds lines that match. -i ignores case, -n shows line numbers, -v inverts, -r searches folders.','grep -i error server.log'],
+head:['head [-n N] file','Shows the first N lines (default 10).','head -n 3 server.log'],
+tail:['tail [-n N] file','Shows the last N lines (default 10).','tail -n 2 server.log'],
+wc:['wc [-l] file','Counts lines, words and characters. -l counts only lines.','wc -l server.log'],
+sort:['sort [-r] [-n] [file]','Sorts lines. -r reverses, -n sorts numbers.','sort names.txt'],
+uniq:['uniq [-c]','Collapses repeated neighbouring lines. -c shows how many times each appeared. Sort first!','sort names.txt | uniq -c'],
+awk:["awk '{print $N}' [file]",'Prints the Nth word (column) of every line.',"awk '{print $2}' data.txt"],
+cut:['cut -d CHAR -f N [file]','Cuts a column out of each line using a separator character.','cut -d: -f1 /etc/passwd'],
+find:['find [path] [-name pattern] [-type f|d]','Searches for files and folders by name or type.',"find . -name '*.txt'"],
+stat:['stat file','Shows details of a file: size, permissions, owner.','stat notes.txt'],
+tree:['tree [path]','Draws folders as a tree.','tree'],
+which:['which command','Shows where a command lives, or tells you it does not exist.','which ls'],
+man:['man command','Shows the manual for a command (a short version here).','man grep'],
+env:['env','Lists environment variables.','env | grep HOME'],
+export:['export NAME=value','Sets an environment variable for programs you start next.','export DB_URL=postgres://db/app'],
+whoami:['whoami','Prints your user name.','whoami'],
+id:['id','Shows your user id and groups.','id'],
+ps:['ps [aux]','Lists running processes. aux shows all of them with CPU usage.','ps aux'],
+kill:['kill [-9] pid','Stops a process by its number (pid). -9 forces it.','kill -9 666'],
+df:['df','Shows disk space.','df'],
+free:['free','Shows memory use.','free'],
+uname:['uname','Shows the system name and kernel.','uname'],
+date:['date','Prints the date and time.','date'],
+history:['history','Lists the commands you typed before.','history'],
+clear:['clear','Clears the screen (Ctrl+L does the same).','clear'],
+nano:['nano file','Opens a file in the editor panel.','nano notes.txt'],
+sudo:['sudo command','Runs a command as the administrator.','sudo ufw status'],
+ssh:['ssh [-i key] host','Logs in to another computer securely. The private key file must be readable only by you (chmod 600).','ssh -i ~/.ssh/id_rsa prod'],
+ufw:['ufw status | ufw deny PORT | ufw deny from IP','The firewall. Block a port or a whole address.','sudo ufw deny 3306'],
+ss:['ss -tlnp','Lists the ports that programs are listening on.','ss -tlnp'],
+curl:['curl url','Fetches a web address.','curl localhost:3000'],
+hadolint:['hadolint Dockerfile','Lints a Dockerfile for mistakes and security problems.','hadolint Dockerfile'],
+trivy:['trivy image .','Scans an image for known vulnerabilities.','trivy image .'],
+npm:['npm audit','Checks your dependencies for known vulnerabilities.','npm audit'],
+systemctl:['systemctl status NAME','Shows whether a service is running.','systemctl status nginx']
+};
+Object.assign(MAN,{
+file:['file path','Guesses what kind of file something is.','file notes.txt'],
+du:['du [-h] [-s] [path]','Shows how much space files and folders use.','du -sh .'],
+basename:['basename path','Prints only the last part of a path.','basename /home/dojo/notes.txt'],
+dirname:['dirname path','Prints a path without its last part.','dirname /home/dojo/notes.txt'],
+realpath:['realpath path','Prints the full absolute path.','realpath notes.txt'],
+readlink:['readlink link','Shows where a symbolic link points.','readlink mylink'],
+rmdir:['rmdir folder','Removes an EMPTY folder (use rm -r for full ones).','rmdir old'],
+ln:['ln [-s] target link','Makes a link. -s makes a symbolic link (a shortcut).','ln -s notes.txt n'],
+less:['less file','Reads a file page by page (here it prints the file).','less server.log'],
+more:['more file','Older page-by-page reader (here it prints the file).','more server.log'],
+vi:['vi file','Classic editor. Here it opens the editor panel.','vi notes.txt'],
+vim:['vim file','Improved vi. Here it opens the editor panel.','vim notes.txt'],
+tee:['tee [-a] file','Prints its input AND saves it to a file. -a appends.','echo hi | tee out.txt'],
+tac:['tac file','Prints a file with the last line first.','tac notes.txt'],
+rev:['rev file','Reverses the characters of every line.','echo hello | rev'],
+nl:['nl file','Prints a file with line numbers.','nl notes.txt'],
+sed:['sed [-n] [-i] SCRIPT [file]','Edits text on the fly. Supported: s/old/new/g, Np, N,Mp, Nd. -i changes the file itself.','sed s/linux/Linux/g notes.txt'],
+tr:['tr [-d] FROM TO','Swaps or deletes characters. Ranges like a-z work.','echo hello | tr a-z A-Z'],
+diff:['diff file1 file2','Shows lines that differ (< only in the first, > only in the second). Simplified.','diff a.txt b.txt'],
+xargs:['xargs command','Turns input words into arguments of a command.','echo notes.txt | xargs cat'],
+chown:['sudo chown user[:group] file','Changes who owns a file (administrator only).','sudo chown root:root notes.txt'],
+chgrp:['sudo chgrp group file','Changes the group of a file (administrator only).','sudo chgrp staff notes.txt'],
+groups:['groups','Shows the groups you belong to.','groups'],
+who:['who','Shows who is logged in.','who'],
+w:['w','Shows who is logged in and what they are doing.','w'],
+last:['last','Shows the history of logins.','last'],
+useradd:['sudo useradd name','Creates a new user (adds a line to /etc/passwd).','sudo useradd bob'],
+userdel:['sudo userdel name','Deletes a user.','sudo userdel bob'],
+passwd:['passwd [user]','Changes a password (simulated).','passwd'],
+su:['su [user]','Switch user. Disabled here, use sudo.','su'],
+top:['top','Shows the busiest processes (a one-time snapshot here).','top'],
+htop:['sudo apt install htop, then htop','A friendlier top. Not installed until you install it.','htop'],
+uptime:['uptime','Shows how long the machine has been running and its load.','uptime'],
+lsblk:['lsblk','Lists disks and partitions.','lsblk'],
+lscpu:['lscpu','Shows CPU information.','lscpu'],
+dmesg:['dmesg','Shows kernel messages from boot.','dmesg'],
+hostname:['hostname','Prints the machine name.','hostname'],
+cal:['cal','Prints a calendar of this month.','cal'],
+lsb_release:['lsb_release -a','Shows which Linux distribution this is.','lsb_release -a'],
+systemctl:['systemctl status|start|stop|restart|is-active NAME','Shows or controls services. start, stop and restart need sudo.','sudo systemctl restart nginx'],
+service:['service NAME status|start|stop|restart','Older way to control services.','service nginx status'],
+journalctl:['journalctl [-u NAME]','Shows system and service logs.','journalctl -u nginx'],
+crontab:['crontab -l | -e | -r','Lists, edits or removes your scheduled jobs. -e opens the editor panel.','crontab -e'],
+ip:['ip addr','Shows network interfaces and addresses.','ip addr'],
+ifconfig:['ifconfig','Older way to show network interfaces.','ifconfig'],
+netstat:['netstat -tlnp','Lists listening ports (older than ss).','netstat -tlnp'],
+ping:['ping [-c N] host','Checks that a host answers. Simulated.','ping -c 3 example.com'],
+nslookup:['nslookup name','Looks up the address of a name. Simulated.','nslookup example.com'],
+dig:['dig [+short] name','Looks up DNS records. Simulated.','dig +short example.com'],
+wget:['wget url','Downloads a file (simulated, saves a small test file).','wget http://example.com/a.txt'],
+scp:['scp file host:path','Copies a file to another machine over SSH. Simulated.','scp notes.txt prod:/tmp/'],
+rsync:['rsync -av source target','Syncs folders efficiently. Simulated.','rsync -av proj/ backup/'],
+nmap:['sudo apt install nmap, then nmap host','Scans a machine for open ports. Only localhost can be scanned here. ufw-blocked ports show as filtered.','nmap localhost'],
+tar:['tar -czf out.tgz files | tar -tf out.tgz | tar -xzf out.tgz','Packs files into one archive, lists it, or unpacks it.','tar -czf backup.tgz notes.txt'],
+gzip:['gzip file','Compresses a file into file.gz.','gzip server.log'],
+gunzip:['gunzip file.gz','Restores a compressed file.','gunzip server.log.gz'],
+zip:['zip out.zip files','Packs files into a zip archive.','zip out.zip notes.txt'],
+unzip:['unzip out.zip','Unpacks a zip archive.','unzip out.zip'],
+apt:['sudo apt update | install PKG | remove PKG | list --installed | search WORD','Installs software on Debian/Ubuntu. Needs sudo, except list and search.','sudo apt install htop'],
+'apt-get':['sudo apt-get install PKG','The older form of apt.','sudo apt-get install nmap'],
+dpkg:['dpkg -l','Lists installed packages.','dpkg -l'],
+pip:['pip install NAME | pip list','Installs Python packages (simulated).','pip install requests'],
+git:['git init | status | add FILE | commit -m MSG | log | branch','Tracks versions of your files (simplified).','git init'],
+'ssh-keygen':['ssh-keygen [-t type] [-f path]','Makes a key pair. The private key is saved with mode 600.','ssh-keygen -f mykey'],
+openssl:['openssl rand -hex N | openssl version','Crypto toolbox. Here: random values (simulated, not for real secrets).','openssl rand -hex 16'],
+printf:['printf format args','Prints formatted text. %s is text, %d is a number.','printf "%s has %d files\\n" dojo 3'],
+printenv:['printenv [NAME]','Prints one environment variable, or all.','printenv HOME'],
+unset:['unset NAME','Removes an environment variable.','unset DB_URL'],
+seq:['seq [first] last','Prints a sequence of numbers.','seq 5'],
+yes:['yes [text]','Repeats a word (stops after 5 lines here).','yes ok'],
+expr:['expr 6 + 3','Calculates simple maths.','expr 6 % 4'],
+bc:['echo "1+2*3" | bc','A calculator. Supports + - * / % ^ and brackets.','echo "(1+2)^3" | bc'],
+true:['true','Does nothing and succeeds.','true'],
+false:['false','Does nothing and fails.','false'],
+sleep:['sleep seconds','Waits (instant here).','sleep 1'],
+exit:['exit','Leaves the shell (the practice shell just keeps going).','exit'],
+help:['help','Shows a quick start and how to find commands.','help']
+});
+const CATS=[['📁 Navigate & inspect',['pwd','ls','cd','tree','stat','file','du','find','which','basename','dirname','realpath','readlink']],['✂️ Create, copy, delete',['mkdir','rmdir','touch','cp','mv','rm','ln']],['📖 Read & edit text',['cat','less','more','head','tail','nano','vi','vim','tee','tac','rev','nl']],['🔎 Search & transform text',['grep','sort','uniq','wc','cut','awk','sed','tr','diff','xargs']],['🔐 Permissions & users',['chmod','chown','chgrp','id','whoami','groups','who','w','last','useradd','userdel','passwd','su','sudo']],['⚙️ Processes & system',['ps','top','htop','kill','uptime','df','free','lsblk','lscpu','dmesg','uname','hostname','date','cal','lsb_release','systemctl','service','journalctl','crontab']],['🌐 Network',['ip','ifconfig','ss','netstat','ping','nslookup','dig','curl','wget','ssh','scp','rsync','nmap','ufw']],['📦 Archives, packages & git',['tar','gzip','gunzip','zip','unzip','apt','apt-get','dpkg','pip','npm','git']],['🛡️ Security tools',['ssh-keygen','openssl','hadolint','trivy']],['🧮 Variables & scripting',['echo','printf','env','printenv','export','unset','seq','yes','expr','bc','true','false','sleep','history','clear','exit','man','help']]];
+const PKG_REPO=['tree','htop','nmap','vim','git','python3','nodejs','net-tools','zip','unzip','jq','wget','tmux','fail2ban','mysql-server','rsync'];
+const inst=p=>(S.pkgs||(S.pkgs=new Set(['bash','coreutils','openssh-server','nginx','curl','sudo','ufw','tree','git','zip','unzip','wget','rsync','vim']))).has(p);
+const notInst=p=>"Command '"+p+"' not found, but can be installed with:\nsudo apt install "+p;
+const NOLOCK='E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)\nE: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?';
+const fakeIp=h=>/^\d+\.\d+\.\d+\.\d+$/.test(h)?h:h==='localhost'?'127.0.0.1':h==='example.com'?'93.184.216.34':'203.0.113.'+(([...h].reduce((a,c)=>a+c.charCodeAt(0),0)%200)+10);
+const sizeFmt=(n,h)=>{const k=Math.max(4,Math.ceil(n/4096)*4);return h?(k<1024?k+'K':(k/1024).toFixed(1)+'M'):String(k)};
+const mkp=p=>{for(let d=dirname(p);d!=='/'&&!fs[d];d=dirname(d))fs[d]={d:1,m:'rwxr-xr-x'}};
+const packFiles=args=>{const o={};for(const x of args){const p=res(x);if(!fs[p])return {err:x};const base=dirname(p);Object.keys(fs).filter(k=>k===p||k.startsWith(p+'/')).forEach(k=>{o[k.slice(base==='/'?1:base.length+1)]=fs[k].d?null:fs[k].c})}return {o}};
+const unpack=o=>{for(const [rel,c] of Object.entries(o)){const p=res(rel);mkp(p);fs[p]=c===null?{d:1,m:'rwxr-xr-x'}:{c,m:'rw-r--r--'}}};
+const calc=s=>{let i=0;const ws=()=>{while(s[i]===' ')i++},num=()=>{ws();if(s[i]==='('){i++;const v=add();ws();i++;return v}if(s[i]==='-'){i++;return -num()}const m=s.slice(i).match(/^\d+(\.\d+)?/);if(!m)throw 0;i+=m[0].length;return +m[0]},pow=()=>{let v=num();ws();while(s[i]==='^'||(s[i]==='*'&&s[i+1]==='*')){i+=s[i]==='^'?1:2;v=Math.pow(v,num());ws()}return v},mul=()=>{let v=pow();ws();while('*/%'.includes(s[i]||'#')){const o=s[i++],r=pow();v=o==='*'?v*r:o==='/'?v/r:v%r;ws()}return v},add=()=>{let v=mul();ws();while('+-'.includes(s[i]||'#')){const o=s[i++],r=mul();v=o==='+'?v+r:v-r;ws()}return v};const v=add();ws();if(i<s.length)throw 0;return v};
+const C={
+help:()=>'Over '+Object.keys(MAN).length+' commands work in this simulated shell. Open the Commands page (header) for the full searchable list, or type man <command>.\nQuick start: ls cd pwd cat grep find sed awk sort tar ps kill ping ssh chmod git apt\nTips: pipes (|), > and >>, $VARS, ~, Tab completion, the arrow keys for history. explain [error] asks Sensei.',
+pwd:()=>S.cwd,whoami:()=>'dojo',id:()=>'uid=1000(dojo) gid=1000(dojo) groups=1000(dojo),27(sudo),998(docker)',hostname:()=>'dojo',
+uname:()=>'Linux dojo 6.8.0-dojo x86_64 GNU/Linux',date:()=>new Date().toString(),echo:a=>a.join(' '),
+df:()=>'Filesystem  Size  Used Avail Use% Mounted on\n/dev/vda1    20G  9.1G  11G  46% /',free:()=>'        total  used  free\nMem:     2048M  612M  1130M',
+ps:a=>/[ae]/.test(a.join(''))?'USER       PID %CPU COMMAND\n'+S.procs.map(p=>p.u.padEnd(10)+' '+String(p.pid).padStart(4)+' '+p.c.padStart(5)+' '+p.cmd).join('\n'):'  PID TTY      TIME CMD\n   88 pts/0 00:00:00 bash\n  131 pts/0 00:00:00 ps',
+kill:a=>{const n=+a.filter(x=>x[0]!=='-').pop();if(!n)return 'kill: usage: kill [-9] pid';if([1,42,88].includes(n))return `kill: (${n}) - Operation not permitted`;const i=S.procs.findIndex(p=>p.pid===n);if(i<0)return `kill: (${n}) - No such process`;S.procs.splice(i,1);return ''},
+
+history:()=>S.hist.map((h,i)=>String(i+1).padStart(4)+'  '+h).join('\n'),
+clear:()=>{S.O.innerHTML='';return ''},
+ls(a){const fl=a.filter(x=>x[0]=='-').join(''),ps=a.filter(x=>x[0]!='-'),p=res(ps[0]),f=fs[p];if(!f)return `ls: cannot access '${ps[0]}': No such file or directory`;
+const L=/l/.test(fl),names=f.d?kids(p).map(k=>k.split('/').pop()).filter(n=>/a/.test(fl)||n[0]!='.').sort():[p.split('/').pop()];
+return names.map(n=>{const e=f.d?fs[(p==='/'?'':p)+'/'+n]:f;return L?`${e.d?'d':e.link?'l':'-'}${e.m} 1 ${e.own||'dojo dojo'} ${String((e.c||'').length).padStart(5)} ${n}${e.link?' -> '+e.link:''}`:n}).join(L?'\n':'  ')},
+cd(a){const t=res(a[0]||HOME);return !fs[t]?`bash: cd: ${a[0]}: No such file or directory`:!fs[t].d?`bash: cd: ${a[0]}: Not a directory`:(S.cwd=t,'')},
+cat(a,inp){if(!a.length)return inp||'';return a.map(x=>{const f=fs[res(x)];return !f?`cat: ${x}: No such file or directory`:f.d?`cat: ${x}: Is a directory`:f.c.replace(/\n$/,'')}).join('\n')},
+mkdir(a){const P=a.includes('-p');return a.filter(x=>x[0]!='-').map(x=>{const t=res(x);if(fs[t])return P?'':`mkdir: cannot create directory '${x}': File exists`;if(!fs[dirname(t)]){if(!P)return `mkdir: cannot create directory '${x}': No such file or directory`;let q='';for(const s of t.split('/').filter(Boolean)){q+='/'+s;if(!fs[q])fs[q]={d:1,m:'rwxr-xr-x'}}return ''}fs[t]={d:1,m:'rwxr-xr-x'};return ''}).filter(Boolean).join('\n')},
+touch(a){return a.map(x=>{const t=res(x);if(!fs[dirname(t)])return `touch: cannot touch '${x}': No such file or directory`;if(!fs[t])fs[t]={c:'',m:'rw-r--r--'};return ''}).filter(Boolean).join('\n')},
+rm(a){const r=a.some(x=>/^-\w*r/.test(x)),o=[];for(const x of a.filter(x=>x[0]!='-')){const p=res(x),f=fs[p];if(p==='/'){o.push("rm: it is dangerous to operate recursively on '/'");continue}if(!f){o.push(`rm: cannot remove '${x}': No such file or directory`);continue}if(f.d&&!r){o.push(`rm: cannot remove '${x}': Is a directory`);continue}Object.keys(fs).forEach(k=>{if(k===p||k.startsWith(p+'/'))delete fs[k]})}return o.join('\n')},
+cp(a){const[s,d]=a.filter(x=>x[0]!='-'),f=fs[res(s||'')];if(!f||f.d||!d)return 'cp: cannot copy (need an existing file and a target)';let t=res(d);if(fs[t]&&fs[t].d)t+='/'+res(s).split('/').pop();fs[t]={...f};return ''},
+mv(a){const e=C.cp(a);if(e)return e.replace('cp','mv');delete fs[res(a.filter(x=>x[0]!='-')[0])];return ''},
+chmod(a){const m=a[0],f=fs[res(a[1])];if(!a[1])return 'chmod: missing operand';if(!f)return `chmod: cannot access '${a[1]}': No such file or directory`;
+if(/^[0-7]{3}$/.test(m))f.m=[...m].map(d=>[4,2,1].map((b,i)=>d&b?'rwx'[i]:'-').join('')).join('');
+else{const r=m.match(/^([ugoa]*)([+-])([rwx]+)$/);if(!r)return `chmod: invalid mode: '${m}'`;const w=r[1]||'a',s=[...f.m];[...'ugo'].forEach((x,i)=>{if(w.includes('a')||w.includes(x))for(const c of r[3])s[i*3+'rwx'.indexOf(c)]=r[2]=='+'?c:'-'});f.m=s.join('')}return ''},
+grep(a,inp){const fl=a.filter(x=>x[0]=='-').join(''),r=a.filter(x=>x[0]!='-');if(!r[0])return 'usage: grep [-inrv] pattern [file]';let re;try{re=new RegExp(r[0],/i/.test(fl)?'i':'')}catch(e){return 'grep: invalid pattern'}const hit=(l,i)=>l!==''&&re.test(l)!=/v/.test(fl)?(/n/.test(fl)?i+':':'')+l:null;
+if(/r/.test(fl)){const t=r[1]||'.',p=res(t);if(!fs[p])return `grep: ${t}: No such file or directory`;return Object.keys(fs).filter(k=>!fs[k].d&&(k===p||k.startsWith(p+'/'))).sort().flatMap(k=>fs[k].c.split('\n').map((l,i)=>hit(l,i+1)).filter(x=>x!==null).map(x=>(k===p?t:t.replace(/\/$/,'')+k.slice(p.length))+':'+x)).join('\n')}
+let tx=inp;if(r[1]){const f=fs[res(r[1])];if(!f)return `grep: ${r[1]}: No such file or directory`;tx=f.c}if(tx==null)return '';return tx.split('\n').map((l,i)=>hit(l,i+1)).filter(x=>x!==null).join('\n')},
+wc(a,inp){const x=a.filter(v=>v[0]!='-')[0],tx=x?(fs[res(x)]||{c:''}).c:inp||'',l=tx.split('\n').length-(tx.endsWith('\n')||!tx?1:0);return a.includes('-l')?String(l):`${l} ${tx.split(/\s+/).filter(Boolean).length} ${tx.length}`},
+head(a,i){return ht('head',a,i)},tail(a,i){return ht('tail',a,i)},
+env:()=>Object.entries(S.env).map(([k,v])=>k+'='+v).join('\n'),
+export(a){a.forEach(x=>{const i=x.indexOf('=');if(i>0)S.env[x.slice(0,i)]=x.slice(i+1)});return ''},
+curl(a){const u=a.find(x=>x[0]!='-')||'',m=u.match(/(?:localhost|127\.0\.0\.1)(?::(\d+))?/);if(!m)return `curl: (6) Could not resolve host: ${u}`;const p=m[1]||'80';return S.ch&&S.ch.curl?S.ch.curl(p):`curl: (7) Failed to connect to localhost port ${p}: Connection refused`},
+nano(a){if(!a[0])return 'usage: nano FILE';const p=res(a[0]);if(!fs[dirname(p)])return `nano: cannot open ${a[0]}: No such directory`;if(!fs[p])fs[p]={c:'',m:'rw-r--r--'};S.edit(p);return 'Opened '+a[0]+' in the editor panel. Save with the button or Ctrl+S.'},
+ssh(a){const i=a.indexOf('-i'),key=i>-1?a[i+1]:null,host=a.filter(x=>x[0]!=='-'&&x!==key).pop();if(!host)return 'usage: ssh [-i key] host';const k=key?res(key):HOME+'/.ssh/id_rsa',f=fs[k];
+if(!f||f.d)return `Warning: Identity file ${key||k} not accessible: No such file or directory.\n${host}: Permission denied (publickey).`;
+if(f.m.slice(3)!=='------')return `@@@ WARNING: UNPROTECTED PRIVATE KEY FILE! @@@\nPermissions 0${[0,3,6].map(j=>[...f.m.slice(j,j+3)].reduce((n,c,x)=>n+(c==='-'?0:[4,2,1][x]),0)).join('')} for '${k}' are too open.\nThis private key will be ignored.\n${host}: Permission denied (publickey).`;
+if(S.ch&&S.ch.id==='sshkey')win();return `✔ Connected to ${host} as deploy`},
+ufw(a){const r=S.fw||(S.fw=[]),pt=S.fwp||(S.fwp=[]);if(a[0]==='status')return 'Status: active\n\nTo          Action   From\n22/tcp      ALLOW    Anywhere'+r.map(x=>`\nAnywhere    DENY     ${x}`).join('')+pt.map(x=>'\n'+(x+'/tcp').padEnd(12)+'DENY     Anywhere').join('');
+if(a[0]==='deny'&&/^\d{1,5}(\/tcp)?$/.test(a[1]||'')){const p=a[1].replace('/tcp','');if(!pt.includes(p))pt.push(p);return +p===22||+p===80?'Rule added\n✘ Warning: this blocks SSH/web. You may lock yourself out!':'Rule added'}
+if(a[0]==='deny'&&a[1]==='from'&&/^\d{1,3}(\.\d{1,3}){3}$/.test(a[2]||'')){if(!r.includes(a[2]))r.push(a[2]);return a[2]==='10.0.0.5'?'Rule added\n✘ Warning: 10.0.0.5 is your admin workstation. You just locked yourself out!':'Rule added'}
+return 'usage: ufw status | ufw deny <port> | ufw deny from <ip>'},
+ss:()=>'State   Local Address:Port   Process\nLISTEN  0.0.0.0:22           sshd\nLISTEN  0.0.0.0:80           nginx\nLISTEN  0.0.0.0:3306         mysqld\nLISTEN  0.0.0.0:6379         redis-server',
+hadolint(a){const f=fs[res(a[0]||'Dockerfile')];if(!f||f.d)return 'hadolint: Dockerfile not found';const c=f.c,o=[];
+if(/^\s*(ENV|ARG)\s+\w*(PASS|SECRET|TOKEN|KEY)\w*[\s=]/mi.test(c))o.push('✘ DL-SEC1 secret stored in ENV/ARG: it stays in the image layers, pass it at runtime');
+if(!/^USER\s+(?!root\b|0\b)\S+/m.test(c))o.push('✘ DL3002 container runs as root: add a non-root USER');
+if(/^EXPOSE\b.*\b22\b/m.test(c))o.push('✘ DL-SEC2 EXPOSE 22 opens SSH inside the container');
+if(/^FROM\s+\S+:latest\b/m.test(c)||/^FROM\s+[^:\s]+\s*$/m.test(c))o.push('✘ DL3007 base image is not pinned: use an exact tag');
+if(!o.length){if(S.ch&&S.ch.id==='dockerfile')win();return '✔ no findings'}return o.join('\n')+'\n'+o.length+' finding(s)'},
+trivy(){const f=fs[HOME+'/Dockerfile'];if(!f)return 'trivy: no Dockerfile in the home folder';const m=f.c.match(/^FROM\s+(\S+)/m);if(!m)return 'trivy: no FROM line found';const mv=m[1].match(/node:(\d+)/),head='Training data: the CVE ids below are fictional.\n\n'+m[1]+'\n';
+if(!mv||+mv[1]<18)return head+'Library   Vulnerability   Severity  Installed  Fixed Version\nopenssl   CVE-2099-1001   CRITICAL  1.1.1k     3.0.13 (node:20 base)\nglibc     CVE-2099-1002   CRITICAL  2.28       2.36 (node:20 base)\nnpm       CVE-2099-1003   HIGH      6.14.0     10.2.4 (node:20 base)\nzlib      CVE-2099-1004   MEDIUM    1.2.11     1.3.1\nTotal: 4 (MEDIUM: 1, HIGH: 1, CRITICAL: 2)\nTip: the Fixed Version column points to the node:20 base image.';
+if(S.ch&&S.ch.id==='trivy')win();return head+'Total: 0 (HIGH: 0, CRITICAL: 0)\n✔ image passes the policy'},
+npm(a){if(a[0]!=='audit')return "npm: only 'npm audit' is available in the dojo";if(a[1]==='fix')return 'npm audit fix is disabled here. Edit package.json yourself, that is the lesson.';const f=fs[S.cwd+'/package.json'];if(!f)return 'npm ERR! code ENOENT\nnpm ERR! no package.json in '+S.cwd+' (cd into the project folder)';let p;try{p=JSON.parse(f.c)}catch(e){return 'npm ERR! code EJSONPARSE\nnpm ERR! package.json is not valid JSON'}
+const d={...p.dependencies},v=x=>String(x).replace(/^[^\d]*/,'').split('.').map(n=>parseInt(n)||0),lt=(x,y)=>{const A=v(x),B=v(y);for(let i=0;i<3;i++)if((A[i]||0)!==(B[i]||0))return (A[i]||0)<(B[i]||0);return false},R=[['lodash','4.17.21','high','Command Injection (CVE-2021-23337)'],['minimist','1.2.6','critical','Prototype Pollution (CVE-2021-44906)']].filter(([n,fx])=>d[n]&&lt(d[n],fx));
+if(!R.length){if(S.ch&&S.ch.id==='deps')win();return 'found 0 vulnerabilities'}
+return '# npm audit report\n\n'+R.map(([n,fx,sev,t])=>`${n}  <${fx}\nSeverity: ${sev}\n${t}\nfix available: upgrade ${n} to >=${fx}\n`).join('\n')+`\n${R.length} vulnerabilit${R.length>1?'ies':'y'}`},
+man(a){const m=MAN[a[0]];return a[0]?(m?'NAME\n  '+a[0]+'\n\nWHAT IT DOES\n  '+m[1]+'\n\nUSAGE\n  '+m[0]+'\n\nEXAMPLE\n  '+m[2]:'No manual entry for '+a[0]+'. Try: help'):'What manual page do you want? Example: man grep'},
+which(a){return a.map(x=>C.hasOwnProperty(x)?'/usr/bin/'+x:'which: no '+x+' in ('+S.env.PATH+')').join('\n')},
+cut(a,inp){let d='\t',f=1,file=null;for(let i=0;i<a.length;i++){const x=a[i];if(x==='-d')d=a[++i];else if(x.startsWith('-d'))d=x.slice(2);else if(x==='-f')f=+a[++i];else if(/^-f\d+$/.test(x))f=+x.slice(2);else if(x[0]!=='-')file=x}
+const tx=file?(fs[res(file)]||{c:null}).c:inp;if(tx==null)return 'cut: '+file+': No such file or directory';return tx.split('\n').filter(Boolean).map(l=>l.split(d)[f-1]??'').join('\n')},
+find(a){let p='.',nm=null,ty=null;for(let i=0;i<a.length;i++){if(a[i]==='-name')nm=a[++i];else if(a[i]==='-type')ty=a[++i];else if(a[i][0]!=='-')p=a[i]}
+const b=res(p);if(!fs[b])return "find: '"+p+"': No such file or directory";const re=nm?new RegExp('^'+nm.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.')+'$'):null;
+return Object.keys(fs).filter(k=>k===b||k.startsWith(b==='/'?'/':b+'/')).sort().filter(k=>(!re||re.test(k.split('/').pop()))&&(!ty||(ty==='d')===!!fs[k].d)).map(k=>k===b?p:p.replace(/\/$/,'')+k.slice(b==='/'?0:b.length)).join('\n')},
+stat(a){if(!a[0])return 'stat: missing operand';const f=fs[res(a[0])];if(!f)return "stat: cannot stat '"+a[0]+"': No such file or directory";const o=[0,3,6].map(j=>[...f.m.slice(j,j+3)].reduce((n,c,x)=>n+(c==='-'?0:[4,2,1][x]),0)).join('');return '  File: '+a[0]+'\n  Size: '+(f.c||'').length+'  '+(f.d?'directory':'regular file')+'\nAccess: (0'+o+'/'+(f.d?'d':'-')+f.m+')  Uid: (1000/dojo)  Gid: (1000/dojo)'},
+tree(a){const b=res(a[0]||'.');if(!fs[b]||!fs[b].d)return (a[0]||'.')+' [error opening dir]';const out=[a[0]||'.'];const walk=(p,pre)=>{const K=kids(p).filter(k=>k.split('/').pop()[0]!=='.').sort();K.forEach((k,i)=>{const last=i===K.length-1;out.push(pre+(last?'└── ':'├── ')+k.split('/').pop());if(fs[k].d&&out.length<80)walk(k,pre+(last?'    ':'│   '))})};walk(b,'');return out.join('\n')},
+basename(a){return (a[0]||'').replace(/\/+$/,'').split('/').pop()||'/'},
+dirname(a){const p=(a[0]||'').replace(/\/+$/,'');return p.includes('/')?(p.replace(/\/[^/]*$/,'')||'/'):'.'},
+realpath(a){const p=res(a[0]);return fs[p]?p:'realpath: '+a[0]+': No such file or directory'},
+readlink(a){const f=fs[res(a[0])];return f&&f.link?f.link:''},
+rmdir(a){return a.filter(x=>x[0]!=='-').map(x=>{const p=res(x),f=fs[p];if(!f)return "rmdir: failed to remove '"+x+"': No such file or directory";if(!f.d)return "rmdir: failed to remove '"+x+"': Not a directory";if(kids(p).length)return "rmdir: failed to remove '"+x+"': Directory not empty";delete fs[p];return ''}).filter(Boolean).join('\n')},
+ln(a){const s=a.includes('-s'),t=a.filter(x=>x[0]!=='-');if(t.length<2)return 'ln: missing file operand';const src=fs[res(t[0])];if(!src&&!s)return "ln: failed to access '"+t[0]+"': No such file or directory";let d=res(t[1]);if(fs[d]&&fs[d].d)d+='/'+t[0].split('/').pop();fs[d]=src?{...src,link:s?t[0]:undefined,m:s?'rwxrwxrwx':src.m}:{c:'',m:'rwxrwxrwx',link:t[0]};return ''},
+less(a,inp){return C.cat(a,inp)},
+more(a,inp){return C.cat(a,inp)},
+file(a){return a.filter(x=>x[0]!=='-').map(x=>{const f=fs[res(x)];if(!f)return x+': cannot open (No such file or directory)';if(f.d)return x+': directory';const c=f.c||'';return x+': '+(f.link?'symbolic link to '+f.link:!c?'empty':c.startsWith('DOJO-GZIP')?'gzip compressed data':c.startsWith('DOJO-ARCHIVE')?'tar archive':/^#!/.test(c)?'shell script, ASCII text executable':/<html/i.test(c)?'HTML document, ASCII text':/^\s*[{[]/.test(c)?'JSON data':'ASCII text')}).join('\n')},
+du(a){const fl=a.filter(x=>x[0]==='-').join(''),h=fl.includes('h'),sm=fl.includes('s'),t=a.find(x=>x[0]!=='-')||'.',b=res(t);if(!fs[b])return "du: cannot access '"+t+"': No such file or directory";const keys=Object.keys(fs).filter(k=>k===b||k.startsWith(b==='/'?'/':b+'/')),sz=d=>keys.filter(k=>!fs[k].d&&(k===d||k.startsWith(d+'/'))).reduce((n,k)=>n+(fs[k].c||'').length,0),dirs=keys.filter(k=>fs[k].d).sort(),show=k=>k===b?t:t.replace(/\/$/,'')+k.slice(b.length);return (sm||!dirs.length?[b]:dirs).map(d=>sizeFmt(sz(d),h)+'\t'+show(d)).join('\n')},
+chown(a){const t=a.filter(x=>x[0]!=='-');if(t.length<2)return 'chown: missing operand';const [o,...fl]=t,rec=a.includes('-R');if(!S.sudo)return "chown: changing ownership of '"+fl[0]+"': Operation not permitted";const [u,g]=o.split(':'),own=(u||'dojo')+' '+(g||u||'dojo');for(const x of fl){const p=res(x);if(!fs[p])return "chown: cannot access '"+x+"': No such file or directory";Object.keys(fs).filter(k=>k===p||(rec&&k.startsWith(p+'/'))).forEach(k=>{fs[k].own=own})}return ''},
+chgrp(a){const t=a.filter(x=>x[0]!=='-');return t.length<2?'chgrp: missing operand':C.chown([':'+t[0],...t.slice(1)])},
+tee(a,inp){const f=a.find(x=>x[0]!=='-');if(f){const p=res(f);if(!fs[dirname(p)])return 'tee: '+f+': No such file or directory';fs[p]={m:'rw-r--r--',...fs[p],c:(a.includes('-a')&&fs[p]?fs[p].c:'')+(inp||'')+'\n'}}return inp||''},
+tac(a,inp){const tx=a[0]?(fs[res(a[0])]||{c:null}).c:inp;if(tx==null)return 'tac: '+a[0]+': No such file or directory';return tx.replace(/\n$/,'').split('\n').reverse().join('\n')},
+rev(a,inp){const tx=a[0]?(fs[res(a[0])]||{c:null}).c:inp;if(tx==null)return 'rev: '+a[0]+': No such file or directory';return tx.replace(/\n$/,'').split('\n').map(l=>[...l].reverse().join('')).join('\n')},
+nl(a,inp){const tx=a[0]?(fs[res(a[0])]||{c:null}).c:inp;if(tx==null)return 'nl: '+a[0]+': No such file or directory';return tx.replace(/\n$/,'').split('\n').map((l,i)=>String(i+1).padStart(6)+'\t'+l).join('\n')},
+tr(a,inp){const exr=s=>s.replace('[:lower:]','a-z').replace('[:upper:]','A-Z').replace(/(.)-(.)/g,(_,p,q)=>{let r='';for(let c=p.charCodeAt(0);c<=q.charCodeAt(0);c++)r+=String.fromCharCode(c);return r}),d=a.includes('-d'),ar=a.filter(x=>x!=='-d'),from=exr(ar[0]||''),to=exr(ar[1]||'');return (inp||'').split('').map(c=>{const i=from.indexOf(c);return i<0?c:d?'':(to[Math.min(i,to.length-1)]??c)}).join('')},
+sed(a,inp){let n=false,ip=false,ex=null,file=null;for(let i=0;i<a.length;i++){const x=a[i];if(x==='-n')n=true;else if(x==='-i')ip=true;else if(x==='-e')ex=a[++i];else if(ex===null)ex=x;else file=x}
+if(ex===null)return 'usage: sed [-n] [-i] SCRIPT [file]';let tx=inp;if(file){const f=fs[res(file)];if(!f)return "sed: can't read "+file+': No such file or directory';tx=f.c}if(tx==null)return '';let L=tx.replace(/\n$/,'').split('\n'),m;
+if(m=ex.match(/^s(.)(.*?)\1(.*?)\1([gi]*)$/)){let re;try{re=new RegExp(m[2],m[4])}catch(e){return 'sed: -e expression #1: invalid regex'}L=L.map(l=>l.replace(re,m[3]));if(n)L=[]}
+else if(m=ex.match(/^(\d+)(?:,(\d+))?([pd])$/)){const s0=+m[1],e0=+(m[2]||m[1]),inr=i=>i+1>=s0&&i+1<=e0;L=m[3]==='p'?(n?L.filter((_,i)=>inr(i)):L.flatMap((l,i)=>inr(i)?[l,l]:[l])):L.filter((_,i)=>!inr(i))}
+else return "sed: only s/old/new/g, 'Np', 'N,Mp' and 'Nd' are supported here";
+const out=L.join('\n')+(L.length?'\n':'');if(ip&&file){fs[res(file)].c=out;return ''}return out.replace(/\n$/,'')},
+diff(a){const [x,y]=a.filter(v=>v[0]!=='-'),f=fs[res(x||'')],g=fs[res(y||'')];if(!f||!g)return 'diff: '+(!f?x:y)+': No such file or directory';const A=f.c.replace(/\n$/,'').split('\n'),B=g.c.replace(/\n$/,'').split('\n');return [...A.filter(l=>!B.includes(l)).map(l=>'< '+l),...B.filter(l=>!A.includes(l)).map(l=>'> '+l)].join('\n')},
+xargs(a,inp){const t=(inp||'').split(/\s+/).filter(Boolean);return a.length?run(a.join(' ')+' '+t.join(' ')):t.join(' ')},
+seq(a){const n=a.map(Number);if(!n.length||n.some(isNaN))return 'seq: missing operand';const [s0,e0]=n.length===1?[1,n[0]]:n,o=[];for(let i=s0;i<=e0&&o.length<1000;i++)o.push(i);return o.join('\n')},
+yes(a){return Array(5).fill(a.join(' ')||'y').join('\n')+'\n(stopped after 5 lines; the real yes never ends)'},
+printf(a){const f=(a[0]||'').replace(/\\n/g,'\n').replace(/\\t/g,'\t');let i=1;return f.replace(/%[sd]/g,()=>a[i++]??'')},
+bc(a,inp){const x=(a[0]||inp||'').trim();try{const v=calc(x);return isFinite(v)?String(Number.isInteger(v)?v:+v.toFixed(4)):'Runtime error: divide by zero'}catch(e){return '(standard_in) 1: syntax error'}},
+expr(a){return C.bc([a.join(' ')])},
+true:()=>'',
+false:()=>'',
+sleep:()=>'',
+exit:()=>'logout\n(This is a simulated shell, so it keeps running. Close the tab when you are done.)',
+reboot:()=>'Failed to reboot: this is a safe simulation, the dojo stays up.',
+shutdown:()=>'Failed to power off: this is a safe simulation, the dojo stays up.',
+cal(){const d=new Date(),y=d.getFullYear(),m=d.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),t=d.toLocaleString('en',{month:'long'})+' '+y;let o=' '.repeat(Math.max(0,Math.floor((20-t.length)/2)))+t+'\nSu Mo Tu We Th Fr Sa\n'+'   '.repeat(first);for(let i=1;i<=days;i++)o+=String(i).padStart(2)+((first+i)%7===0?'\n':' ');return o.trimEnd()},
+uptime:()=>' 09:41:07 up 3 days,  4:12,  1 user,  load average: 0.08, 0.03, 0.01',
+who:()=>'dojo     pts/0        2026-10-26 09:12 (10.0.0.5)',
+w:()=>' 09:41:07 up 3 days,  4:12,  1 user,  load average: 0.08, 0.03, 0.01\nUSER     TTY      FROM       LOGIN@  WHAT\ndojo     pts/0    10.0.0.5   09:12   -bash',
+last:()=>'dojo     pts/0        10.0.0.5         Mon Oct 26 09:12   still logged in\ndojo     pts/0        10.0.0.5         Sun Oct 25 18:40 - 19:05  (00:25)\nreboot   system boot  6.8.0-dojo       Thu Oct 22 05:29   still running',
+top:()=>'top - 09:41:07 up 3 days, load average: 0.08, 0.03, 0.01\nTasks: '+S.procs.length+' total\n  PID USER      %CPU COMMAND\n'+[...S.procs].sort((x,y)=>parseFloat(y.c)-parseFloat(x.c)).map(p=>String(p.pid).padStart(5)+' '+p.u.padEnd(9)+String(p.c).padStart(5)+' '+p.cmd).join('\n')+'\n(press q to quit in a real terminal)',
+htop(){return inst('htop')?C.top():notInst('htop')},
+lsblk:()=>'NAME   SIZE TYPE MOUNTPOINT\nvda     20G disk\n└─vda1  20G part /',
+lscpu:()=>'Architecture:        x86_64\nCPU(s):              2\nModel name:          Dojo Virtual CPU @ 2.40GHz\nThread(s) per core:  1',
+dmesg:()=>'[    0.000000] Linux version 6.8.0-dojo\n[    1.204311] EXT4-fs (vda1): mounted filesystem\n[    3.512907] random: crng init done',
+lsb_release:()=>'Distributor ID:\tUbuntu\nDescription:\tUbuntu 24.04 LTS (Dojo)\nRelease:\t24.04\nCodename:\tnoble',
+printenv(a){return a[0]?(S.env[a[0]]??''):C.env()},
+unset(a){a.forEach(x=>{delete S.env[x]});return ''},
+ip(a){return !a[0]||/^a(ddr)?/.test(a[0])?'1: lo: <LOOPBACK,UP> mtu 65536\n    inet 127.0.0.1/8 scope host lo\n2: eth0: <BROADCAST,MULTICAST,UP> mtu 1500\n    inet 10.0.0.12/24 brd 10.0.0.255 scope global eth0':'usage: ip addr'},
+ifconfig:()=>'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 10.0.0.12  netmask 255.255.255.0  broadcast 10.0.0.255\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0',
+netstat:()=>'Proto Local Address     State    PID/Program\ntcp   0.0.0.0:22        LISTEN   42/sshd\ntcp   0.0.0.0:80        LISTEN   77/nginx\ntcp   0.0.0.0:3306      LISTEN   120/mysqld\ntcp   0.0.0.0:6379      LISTEN   131/redis-server',
+ping(a){const ci=a.indexOf('-c'),sk=ci>-1?ci+1:-1,n=ci>-1?Math.min(+a[ci+1]||4,10):4,h=a.filter((x,i)=>x[0]!=='-'&&i!==sk).pop();if(!h)return 'ping: usage error: Destination address required';if(!/^(localhost|(\d{1,3}\.){3}\d{1,3}|[\w-]+(\.[\w-]+)+)$/.test(h))return 'ping: '+h+': Name or service not known';const ip=fakeIp(h);let o='PING '+h+' ('+ip+') 56(84) bytes of data.';for(let i=1;i<=n;i++)o+='\n64 bytes from '+ip+': icmp_seq='+i+' ttl=57 time='+(11+i*1.3).toFixed(1)+' ms';return o+'\n\n--- '+h+' ping statistics ---\n'+n+' packets transmitted, '+n+' received, 0% packet loss'},
+nslookup(a){return a[0]?'Server:\t\t10.0.0.2\nAddress:\t10.0.0.2#53\n\nNon-authoritative answer:\nName:\t'+a[0]+'\nAddress: '+fakeIp(a[0])+'\n(simulated: addresses are not real)':'usage: nslookup name'},
+dig(a){const h=a.find(x=>x[0]!=='-'&&x[0]!=='+');return h?(a.includes('+short')?fakeIp(h):';; ANSWER SECTION:\n'+h+'.\t300\tIN\tA\t'+fakeIp(h)+'\n(simulated)'):'usage: dig name'},
+wget(a){const u=a.find(x=>x[0]!=='-');if(!u)return 'wget: missing URL';const seg=u.replace(/^\w+:\/\//,'').replace(/[?#].*$/,'').split('/').filter(Boolean),last=seg.length>1?seg[seg.length-1]:'',name=/\./.test(last)?last:'index.html';fs[res(name)]={c:'<html><body>Downloaded by the dojo (simulated)</body></html>\n',m:'rw-r--r--'};return '--2026-10-26 09:41:07--  '+u+'\nResolving host... done.\nHTTP request sent, awaiting response... 200 OK\nSaving to: '+name+'\n\n'+name+' saved [52]'},
+scp(a){const p=a.filter(x=>x[0]!=='-');return p.length<2?'usage: scp source [user@]host:path':p[0]+'   100%   52   1.2KB/s   00:00\n(simulated copy)'},
+rsync:()=>'sending incremental file list\n\nsent 154 bytes  received 35 bytes\ntotal size is 52  speedup is 0.27\n(simulated)',
+nmap(a){if(!inst('nmap'))return notInst('nmap');const h=a.find(x=>x[0]!=='-');if(!h)return 'Usage: nmap [target]';if(!/^(localhost|127\.0\.0\.1|10\.0\.0\.12)$/.test(h))return 'Note: only localhost and 10.0.0.12 can be scanned in the dojo.';const bl=S.fwp||[];return 'Starting Nmap (simulated)\nNmap scan report for '+h+'\nPORT      STATE     SERVICE\n'+[['22','ssh'],['80','http'],['3306','mysql'],['6379','redis']].map(([p,sv])=>(p+'/tcp').padEnd(10)+(bl.includes(p)?'filtered  ':'open      ')+sv).join('\n')},
+'ssh-keygen'(a){const i=a.indexOf('-f'),p=i>-1?res(a[i+1]||''):HOME+'/.ssh/id_rsa',ty=a.includes('-t')?a[a.indexOf('-t')+1]:'rsa';if(fs[p])return p+' already exists.\nOverwrite (y/n)? n';mkp(p);const r=()=>Math.random().toString(36).slice(2,18);fs[p]={c:'-----BEGIN DEMO PRIVATE KEY-----\n'+r()+r()+r()+'\n-----END DEMO PRIVATE KEY-----\n',m:'rw-------'};fs[p+'.pub']={c:'ssh-'+ty+' AAAA'+r()+' dojo@dojo\n',m:'rw-r--r--'};return 'Generating public/private '+ty+' key pair.\nYour identification has been saved in '+p+'\nYour public key has been saved in '+p+'.pub\nThe key fingerprint is: SHA256:'+r()+' dojo@dojo'},
+openssl(a){if(a[0]==='version')return 'OpenSSL 3.0.13 (simulated)';if(a[0]==='rand'){const n=+(a.filter(x=>/^\d+$/.test(x))[0]||16);return a.includes('-hex')?Array.from({length:n},()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join(''):Array.from({length:n},()=>String.fromCharCode(97+Math.floor(Math.random()*26))).join('')}return 'usage: openssl rand -hex N | openssl version'},
+useradd(a){if(!S.sudo)return 'useradd: Permission denied.\nuseradd: cannot lock /etc/passwd; try again later.';const n=a.filter(x=>x[0]!=='-').pop();if(!n||!/^[a-z_][a-z0-9_-]{0,31}$/.test(n))return 'useradd: invalid user name';const pw=fs['/etc/passwd'];if(pw.c.split('\n').some(l=>l.split(':')[0]===n))return "useradd: user '"+n+"' already exists";const uid=1000+pw.c.split('\n').filter(l=>+l.split(':')[2]>=1000).length;pw.c+=n+':x:'+uid+':'+uid+'::/home/'+n+':/bin/bash\n';fs['/home/'+n]={d:1,m:'rwxr-xr-x'};return ''},
+userdel(a){if(!S.sudo)return 'userdel: Permission denied.';const n=a.filter(x=>x[0]!=='-').pop(),pw=fs['/etc/passwd'];if(!n||!pw.c.split('\n').some(l=>l.split(':')[0]===n))return "userdel: user '"+n+"' does not exist";if(n==='root'||n==='dojo')return 'userdel: user '+n+' is currently used by process 88';pw.c=pw.c.split('\n').filter(l=>l.split(':')[0]!==n).join('\n');return ''},
+passwd(a){if(a[0]&&a[0]!=='dojo'&&!S.sudo)return 'passwd: You may not view or modify password information for '+a[0]+'.';return 'New password: ********\npasswd: password updated successfully (simulated)'},
+su:()=>'su: switching users is disabled in the dojo. Use sudo instead.',
+groups:()=>'dojo sudo docker',
+tar(a){const f=a.find(x=>/^-?[cxtzvf]+$/.test(x));if(!f)return 'tar: You must specify one of the -c, -x, -t options';const fl=f.replace('-',''),fi=a.indexOf(f)+1,file=a[fi],rest=a.slice(fi+1);if(!file)return 'tar: option requires an argument -- f';
+if(fl.includes('c')){if(!rest.length)return 'tar: Cowardly refusing to create an empty archive';const r=packFiles(rest);if(r.err)return 'tar: '+r.err+': Cannot stat: No such file or directory';fs[res(file)]={c:'DOJO-ARCHIVE '+JSON.stringify(r.o),m:'rw-r--r--'};return fl.includes('v')?Object.keys(r.o).join('\n'):''}
+const ar=fs[res(file)];if(!ar)return 'tar: '+file+': Cannot open: No such file or directory';if(!ar.c.startsWith('DOJO-ARCHIVE '))return 'tar: This does not look like a tar archive';const o=JSON.parse(ar.c.slice(13));if(fl.includes('t'))return Object.keys(o).join('\n');if(fl.includes('x')){unpack(o);return fl.includes('v')?Object.keys(o).join('\n'):''}return 'tar: You must specify one of the -c, -x, -t options'},
+gzip(a){const x=a.find(y=>y[0]!=='-');if(!x)return 'gzip: compressing from a terminal is not supported';const p=res(x),f=fs[p];if(!f)return 'gzip: '+x+': No such file or directory';if(f.d)return 'gzip: '+x+' is a directory -- ignored';fs[p+'.gz']={c:'DOJO-GZIP '+f.c,m:f.m};delete fs[p];return ''},
+gunzip(a){const x=a.find(y=>y[0]!=='-');if(!x)return 'gunzip: missing file';const p=res(x),f=fs[p];if(!f)return 'gunzip: '+x+': No such file or directory';if(!f.c.startsWith('DOJO-GZIP '))return 'gunzip: '+x+': not in gzip format';fs[p.replace(/\.gz$/,'')]={c:f.c.slice(10),m:f.m};delete fs[p];return ''},
+zip(a){const t=a.filter(x=>x[0]!=='-');if(t.length<2)return 'zip error: Nothing to do! usage: zip out.zip files';const r=packFiles(t.slice(1));if(r.err)return '\tzip warning: name not matched: '+r.err;fs[res(t[0])]={c:'DOJO-ARCHIVE '+JSON.stringify(r.o),m:'rw-r--r--'};return t.slice(1).map(x=>'  adding: '+x+' (deflated 0%)').join('\n')},
+unzip(a){const x=a.find(y=>y[0]!=='-');const ar=x&&fs[res(x)];if(!ar)return 'unzip:  cannot find or open '+x;if(!ar.c.startsWith('DOJO-ARCHIVE '))return 'End-of-central-directory signature not found.';const o=JSON.parse(ar.c.slice(13));unpack(o);return 'Archive:  '+x+'\n'+Object.keys(o).map(k=>'  inflating: '+k).join('\n')},
+apt(a){const sub=a[0],pk=a.slice(1).filter(x=>x[0]!=='-');inst('x');const P=S.pkgs;
+if(sub==='list')return [...P].sort().map(p=>p+'/noble,now installed [installed]').join('\n');
+if(sub==='search')return PKG_REPO.filter(p=>p.includes(pk[0]||'')).map(p=>p+' - '+(P.has(p)?'[installed]':'available')).join('\n')||'Sorting... Done';
+if(!['update','install','remove','upgrade','purge'].includes(sub))return 'usage: apt update | install PKG | remove PKG | list --installed | search WORD';
+if(!S.sudo)return NOLOCK;
+if(sub==='update')return 'Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease\nReading package lists... Done\nAll packages are up to date.';
+if(sub==='upgrade')return 'Reading package lists... Done\n0 upgraded, 0 newly installed, 0 to remove.';
+if(!pk.length)return 'E: No packages specified';
+return pk.map(p=>{if(sub==='install'){if(!PKG_REPO.includes(p)&&!P.has(p))return 'E: Unable to locate package '+p;if(P.has(p))return p+' is already the newest version.';P.add(p);return 'Setting up '+p+' ...\n✔ '+p+' installed'}if(!P.has(p))return 'Package '+p+' is not installed, so not removed';P.delete(p);return 'Removing '+p+' ...\n✔ '+p+' removed'}).join('\n')},
+'apt-get'(a){return C.apt(a)},
+dpkg(a){inst('x');return a[0]==='-l'?'ii  '+[...S.pkgs].sort().join('  1.0  amd64\nii  ')+'  1.0  amd64':'usage: dpkg -l'},
+yum:()=>'bash: yum: this is a Debian/Ubuntu system. Use apt instead.',
+dnf:()=>'bash: dnf: this is a Debian/Ubuntu system. Use apt instead.',
+pip(a){if(a[0]==='list')return 'Package    Version\npip        24.0\nsetuptools 68.1.2'+[...(S.pip||[])].map(p=>'\n'+p.padEnd(10)+' 1.0.0').join('');if(a[0]==='install'&&a[1]){(S.pip=S.pip||new Set()).add(a[1]);return 'Collecting '+a[1]+'\nSuccessfully installed '+a[1]+'-1.0.0 (simulated)'}return 'usage: pip install NAME | pip list'},
+pip3(a){return C.pip(a)},
+git(a){const G=S.git||(S.git={on:false,staged:[],tracked:[],commits:[]}),s0=a[0];if(s0==='--version')return 'git version 2.43.0 (simulated)';
+if(s0==='init'){G.on=true;G.root=S.cwd;fs[S.cwd+'/.git']={d:1,m:'rwxr-xr-x'};return 'Initialized empty Git repository in '+S.cwd+'/.git/'}
+if(!G.on)return 'fatal: not a git repository (or any of the parent directories): .git';
+const here=()=>kids(G.root).filter(k=>!fs[k].d).map(k=>k.split('/').pop());
+if(s0==='status'){const un=here().filter(f=>!G.tracked.includes(f)&&!G.staged.includes(f));return 'On branch main'+(G.staged.length?'\nChanges to be committed:\n'+G.staged.map(f=>'\tnew file:   '+f).join('\n'):'')+(un.length?'\nUntracked files:\n'+un.map(f=>'\t'+f).join('\n'):(G.staged.length?'':'\nnothing to commit, working tree clean'))}
+if(s0==='add'){const t=a.slice(1);if(!t.length)return 'Nothing specified, nothing added.';for(const x of t){if(x==='.'||x==='-A')here().forEach(f=>{if(!G.tracked.includes(f)&&!G.staged.includes(f))G.staged.push(f)});else{if(!fs[res(x)])return "fatal: pathspec '"+x+"' did not match any files";const n=x.split('/').pop();if(!G.staged.includes(n)&&!G.tracked.includes(n))G.staged.push(n)}}return ''}
+if(s0==='commit'){const i=a.indexOf('-m');if(i<0||!a[i+1])return 'Aborting commit due to empty commit message. Use: git commit -m "message"';if(!G.staged.length)return 'nothing to commit, working tree clean';const id=Math.random().toString(16).slice(2,9),n=G.staged.length;G.commits.unshift({id,msg:a[i+1]});G.tracked.push(...G.staged);G.staged=[];return '[main '+id+'] '+a[i+1]+'\n '+n+' file(s) changed'}
+if(s0==='log')return G.commits.length?G.commits.map(c=>'commit '+c.id+'\nAuthor: dojo <dojo@dojo>\n\n    '+c.msg+'\n').join('\n'):"fatal: your current branch 'main' does not have any commits yet";
+if(s0==='branch')return '* main';
+return 'usage: git init | status | add FILE | commit -m MSG | log | branch'},
+systemctl(a){const sv=S.svc||(S.svc={nginx:'active',ssh:'active',cron:'active',mysql:'active',docker:'inactive'}),[sub,n]=a;
+if(sub==='list-units')return 'UNIT            ACTIVE\n'+Object.entries(sv).map(([k,v])=>(k+'.service').padEnd(16)+v).join('\n');
+if(!n)return 'usage: systemctl status|start|stop|restart|enable|disable|is-active NAME';if(!(n in sv))return 'Unit '+n+'.service could not be found.';
+if(sub==='status')return '● '+n+'.service - '+n+'\n   Active: '+(sv[n]==='active'?'active (running)':'inactive (dead)');
+if(sub==='is-active')return sv[n];
+if(['start','stop','restart','enable','disable'].includes(sub)){if(!S.sudo)return '==== AUTHENTICATION REQUIRED ====\nFailed to '+sub+' '+n+'.service: Interactive authentication required. (use sudo)';if(sub==='start'||sub==='restart')sv[n]='active';if(sub==='stop')sv[n]='inactive';return ''}
+return 'Unknown command verb '+sub},
+service(a){return a.length<2?'usage: service NAME status|start|stop|restart':C.systemctl([a[1],a[0]])},
+journalctl(a){const u=a.indexOf('-u'),n=u>-1?a[u+1]:'system';return '-- Logs begin at Thu 2026-10-22 --\nOct 26 09:12:01 dojo '+n+'[42]: started\nOct 26 09:30:44 dojo '+n+'[42]: reloaded configuration\nOct 26 09:41:02 dojo '+n+'[42]: ready'},
+crontab(a){const p='/var/spool/cron/dojo';if(a[0]==='-l')return fs[p]?fs[p].c.replace(/\n$/,''):'no crontab for dojo';if(a[0]==='-r'){delete fs[p];return ''}if(a[0]==='-e'){if(!fs[p]){mkp(p);fs[p]={c:'# m h dom mon dow command\n',m:'rw-------'}}S.edit(p);return 'Opened your crontab in the editor panel. Save it, then run crontab -l.'}return 'usage: crontab -l | -e | -r'},
+sort(a,inp){const fl=a.filter(x=>x[0]==='-').join(''),f=a.find(x=>x[0]!=='-'),tx=f?(fs[res(f)]||{c:''}).c:inp||'',n=/n/.test(fl),L=tx.split('\n').filter(Boolean).sort((x,y)=>(n?parseFloat(x)-parseFloat(y):0)||(x<y?-1:x>y?1:0));if(/r/.test(fl))L.reverse();return L.join('\n')},
+uniq(a,inp){const o=[];for(const l of (inp||'').split('\n').filter(Boolean)){if(o.length&&o[o.length-1][1]===l)o[o.length-1][0]++;else o.push([1,l])}return o.map(([c,l])=>a.includes('-c')?String(c).padStart(7)+' '+l:l).join('\n')},
+awk(a,inp){const q=a.filter(x=>x[0]!=='-'),m=(q[0]||'').match(/^\{\s*print\s*(.*?)\s*\}$/);if(!m)return "awk: only '{print $N}' is supported here";const tx=q[1]?(fs[res(q[1])]||{c:''}).c:inp||'',cols=(m[1]||'$0').split(/\s*,\s*/);return tx.split('\n').filter(Boolean).map(l=>{const w=l.trim().split(/\s+/);return cols.map(t=>t==='$0'?l:/^\$\d+$/.test(t)?w[+t.slice(1)-1]||'':t).join(' ')}).join('\n')}
+};
+C.vi=C.vim=C.nano;
+function ht(k,a,inp){let n=10,fl=[];for(let i=0;i<a.length;i++){if(a[i]==='-n')n=+a[++i];else if(/^-\d+$/.test(a[i]))n=-a[i];else fl.push(a[i])}const f=fl[0]?fs[res(fl[0])]:null,tx=fl[0]?(f&&f.c):inp;if(tx==null)return `${k}: ${fl[0]}: No such file or directory`;const L=tx.replace(/\n$/,'').split('\n');return (k=='head'?L.slice(0,n):L.slice(-n)).join('\n')}
+function tok(s){return (s.match(/"[^"]*"|'[^']*'|\S+/g)||[]).map(x=>{const sq=x[0]=="'",v=/^["']/.test(x)?x.slice(1,-1):x;return sq?v:v.replace(/\$(\w+)/g,(_,k)=>S.env[k]??'').replace(/^~(?=\/|$)/,HOME)})}
+function one(s,inp){let t=tok(s.replace(/\s*(>>?)\s*/g,' $1 ').trim());if(!t.length)return '';let red=null;const ri=t.findIndex(x=>x==='>'||x==='>>');if(ri>-1){red=[t[ri],t[ri+1]];t=t.slice(0,ri)}
+let c=t[0],a=t.slice(1);S.sudo=false;if(c==='sudo'){c=a[0];a=a.slice(1);S.sudo=true}let o;
+if(!c)o='sudo: a command is required';
+else if(c.includes('/')){const p=res(c),f=fs[p];o=!f?`bash: ${c}: No such file or directory`:f.d?`bash: ${c}: Is a directory`:!/x/.test(f.m)?`bash: ${c}: Permission denied`:f.run?f.run():'(script ran, no output)'}
+else if(C.hasOwnProperty(c))o=C[c](a,inp);else o=`bash: ${c}: command not found`;
+if(red){if(!red[1])return 'bash: syntax error near unexpected token `newline`';const p=res(red[1]);if(!fs[dirname(p)])return `bash: ${red[1]}: No such file or directory`;if(fs[p]&&fs[p].d)return `bash: ${red[1]}: Is a directory`;fs[p]={m:'rw-r--r--',...fs[p],c:(red[0]=='>>'&&fs[p]?fs[p].c:'')+o+'\n'};return ''}return o}
+const run=line=>{let o=null;for(const sg of line.split(/\s\|\s/))o=one(sg,o);if(S.ch&&S.ch.check&&!S.won&&S.ch.check())win();if(S.tick)setTimeout(S.tick,0);return o};
+/* ---------- shell UI ---------- */
+const col=l=>/error|denied|failed|not found|no such|✘|crashloop|refused|invalid|emerg|bad gateway|unable|cannot|not set/i.test(l)?'e':/✔|success|passed|started|running|ok$/i.test(l)?'o':'';
+function boot(ch){S={fs:mkfs(ch?ch.files:{}),cwd:HOME,env:{HOME,USER:'dojo',SHELL:'/bin/bash',PATH:'/usr/local/bin:/usr/bin:/bin',LANG:'en_US.UTF-8'},hist:[],ch,flags:{},procs:[{pid:1,u:'root',c:'0.0',cmd:'/sbin/init'},{pid:42,u:'root',c:'0.1',cmd:'sshd: /usr/sbin/sshd -D'},{pid:88,u:'dojo',c:'0.0',cmd:'-bash'},...((ch&&ch.procs)||[]).map(p=>({...p}))],won:0,O:$('#O')};fs=S.fs;
+const I=$('#I'),P=$('#P'),O=S.O;let hi=0;
+const pr=()=>P.textContent='dojo@dojo:'+S.cwd.replace(HOME,'~')+'$',put=(t,c)=>{String(t).split('\n').forEach(l=>{const d=document.createElement('div');d.className=c||col(l);d.textContent=l||' ';O.appendChild(d)});O.scrollTop=1e9};
+put(ch?'Debug Dojo shell - type "help" for commands. Read the story, then fix the bug.':'Linux Lab - a safe sandbox. Type "help". Nothing here can break your machine.','o');pr();
+S.edit=openEd;S.put=put;
+$('#T').onclick=()=>getSelection().toString()||I.focus();
+I.onkeydown=e=>{if(e.key==='Enter'){const v=I.value;put('dojo@dojo:'+S.cwd.replace(HOME,'~')+'$ '+v,'pr');I.value='';if(v.trim()){S.hist.push(v);hi=S.hist.length;if(/^explain\b/.test(v))explain(v.replace(/^explain\s*/,'')||S.last||'',put);else{let o;try{o=run(v)}catch(x){o='shell error: '+x.message}if(o){put(o);S.last=o}}}pr()}
+else if(e.key==='ArrowUp'){e.preventDefault();if(hi>0)I.value=S.hist[--hi]}
+else if(e.key==='ArrowDown'){e.preventDefault();I.value=hi<S.hist.length-1?S.hist[++hi]:(hi=S.hist.length,'')}
+else if(e.key==='l'&&e.ctrlKey){e.preventDefault();O.innerHTML=''}
+else if(e.key==='c'&&e.ctrlKey){put(P.textContent+' '+I.value+'^C','pr');I.value=''}
+else if(e.key==='Tab'){e.preventDefault();const v=I.value,pt=v.split(/\s+/),last=pt.pop(),i=last.lastIndexOf('/')+1,base=last.slice(i),first=!pt.length&&!i;
+const pool=first?Object.keys(C):kids(res(last.slice(0,i)||'.')).map(k=>k.split('/').pop()),m=pool.filter(x=>x.startsWith(base));
+if(m.length===1)I.value=[...pt,last.slice(0,i)+m[0]].join(' ')+(first?' ':'');else if(m.length>1)put(m.join('  '),'m')}};
+setTimeout(()=>I.focus({preventScroll:true}),50);
+const tabs=[];let cur=null;
+function openEd(p){$('#ed').hidden=false;if(!tabs.includes(p))tabs.push(p);cur=p;draw()}
+function draw(){$('#tabs').innerHTML=tabs.map(p=>`<button role="tab" aria-selected="${p===cur}" data-p="${p}">${p.split('/').pop()}</button>`).join('');$('#ta').value=(fs[cur]||{c:''}).c;$('#es').textContent=cur;
+$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;draw()})}
+const sv=()=>{if(!cur)return;fs[cur]={m:'rw-r--r--',...fs[cur],c:$('#ta').value};$('#es').textContent='Saved '+cur+' ✔';put('Saved '+cur,'o');if(S.ch&&S.ch.check&&!S.won&&S.ch.check())win();if(S.tick)setTimeout(S.tick,0)};
+$('#sv').onclick=sv;$('#ta').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();sv()}};
+if(ch&&ch.edit.length){const E=ch.edit.map(p=>p[0]==='/'?p:HOME+'/'+p);E.forEach(openEd);cur=E[0];draw()}}
+const termHTML=`<div class="term" id="T"><div class="tb"><i></i><i></i><i></i><span style="margin-left:8px" id="tt">bash - dojo@dojo</span></div><div class="out" id="O" role="log" aria-live="polite"></div><div class="in"><span id="P"></span><input id="I" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal input"></div></div>`;
+const edHTML=`<div class="card" id="ed" hidden style="padding:12px;margin-top:14px"><div class="tabs" id="tabs" role="tablist"></div><textarea id="ta" aria-label="File editor" spellcheck="false"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="mono" id="es" style="font-size:12px;color:var(--m)"></span><button class="btn" id="sv">Save (Ctrl+S)</button></div></div>`;
+/* ---------- views ---------- */
+let USER=null;
+const recalc=()=>{SV.xp=Object.entries(SV.done).reduce((a,[id,d])=>{const c=CH.find(x=>x.id===id);return a+(c?Math.max(10,c.xp-d.h*10):0)},0)+[...new Set(CH.map(c=>c.cat))].filter(k=>CH.filter(c=>c.cat===k).every(c=>SV.done[c.id])).length*BONUS};
+const sync=()=>USER?fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({done:Object.fromEntries(Object.entries(SV.done).filter(([k])=>CH.some(c=>c.id===k)))})}).catch(()=>{}):0;
+const setAu=()=>{const a=$('#au');a.textContent=USER?USER.username+' · Log out':'Log in';a.href=USER?'#dojo':'#login'};
+async function pull(){try{const r=await fetch('/api/progress');if(!r.ok)return;const j=await r.json();for(const k in j.done||{})if(!SV.done[k])SV.done[k]=j.done[k];recalc();save();sync()}catch(e){}}
+let SERVER=true;
+async function init(){for(const k in SV.done)if(!CH.some(c=>c.id===k))delete SV.done[k];recalc();save();try{const r=await fetch('/api/auth/me');if(r.ok){USER=await r.json();setAu();await pull()}else if(r.status!==401)SERVER=false}catch(e){SERVER=false}}
+$('#au').onclick=async e=>{if(!USER)return;e.preventDefault();await fetch('/api/auth/logout',{method:'POST'}).catch(()=>{});USER=null;setAu();location.hash==='#dojo'?route():location.hash='dojo'};
+const app=$('#app');
+function clearT(){clearInterval(TM)}
+function lab(){app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>Linux Lab</b></div><p style="color:var(--m);margin-top:0">A free sandbox with a mini Linux. Try: <code>mkdir -p proj/src</code>, <code>echo hi &gt; a.txt</code>, <code>cat notes.txt | grep linux</code>, <code>chmod 755 a.txt</code>, <code>ls -la</code>. Use <code>nano file</code> for the editor.</p><div class="grid"><div>${edHTML}</div>${termHTML}</div></div>`;boot(null);if(PRE){$('#I').value=PRE;PRE=''}}
+function login(){
+if(USER){app.innerHTML=`<div class="wrap"><div class="card auth"><h2>Welcome back, ${USER.username}</h2><p style="color:var(--m)">Your progress syncs to your account.</p><a class="btn glow" href="#dojo">Go to dojo</a></div></div>`;return}
+let mode='login';
+app.innerHTML=`<div class="wrap"><div class="card auth"><div class="mono" style="color:var(--g)">$ dojo auth</div><h2>Join the dojo</h2><div class="seg" role="tablist"><button type="button" role="tab" id="t1" aria-selected="true">Log in</button><button type="button" role="tab" id="t2" aria-selected="false">Sign up</button></div>
+<form id="af" novalidate><label>Username<input class="f" id="u" autocomplete="username" maxlength="16" autocapitalize="off" spellcheck="false"></label><label>Password<input class="f" id="pw" type="password" autocomplete="current-password" maxlength="72"></label><div id="ae" class="e" role="alert" style="min-height:24px"></div><button class="btn glow" id="as" style="width:100%">Log in</button></form>
+<p style="color:var(--m);font-size:14px">Username: 3-16 lowercase letters, numbers or _. Password: 8+ characters.</p><a href="#dojo">Continue as guest</a></div></div>`;
+const tab=m=>{mode=m;$('#t1').setAttribute('aria-selected',m==='login');$('#t2').setAttribute('aria-selected',m!=='login');$('#as').textContent=m==='login'?'Log in':'Create account';$('#pw').autocomplete=m==='login'?'current-password':'new-password';$('#ae').textContent=''};
+$('#t1').onclick=()=>tab('login');$('#t2').onclick=()=>tab('signup');$('#u').focus();
+$('#af').onsubmit=async e=>{e.preventDefault();const b=$('#as'),er=$('#ae');er.textContent='';b.disabled=true;
+try{const r=await fetch('/api/auth/'+(mode==='login'?'login':'register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#u').value.trim().toLowerCase(),password:$('#pw').value})});let j={};try{j=await r.json()}catch(x){}
+if(!r.ok){er.textContent=r.status===404?'No server here. Use guest mode, or run the full project with Docker.':(j.error||'Something went wrong');b.disabled=false;return}
+USER=j;setAu();await pull();location.hash='lab'}catch(x){er.textContent='Cannot reach the server. Guest mode still works offline.';b.disabled=false}}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let GEN=null;
+const oct2m=d=>[...d].map(x=>[4,2,1].map((b,i)=>x&b?'rwx'[i]:'-').join('')).join('');
+function toChallenge(j){const files={};j.files.forEach(f=>{files[f.path]={c:f.content,m:oct2m(f.mode)}});return {id:'gen',cat:'AI',title:esc(j.title),xp:10,edit:j.files.map(f=>f.path),story:esc(j.story),files,hints:j.hints,why:esc(j.why),check:()=>j.rules.every(r=>{const f=fs[HOME+'/'+r.path];return !!f&&(r.op==='contains'?f.c.includes(r.val):r.op==='notContains'?!f.c.includes(r.val):f.m===oct2m(r.val))})}}
+function gen(){app.innerHTML='<div class="wrap"><div class="card auth"><h2>AI challenge lab</h2><p style="color:var(--m)">Type a topic (for example: cron job, sudo rules, weak passwords). AI builds a broken setup for you to fix. Practice only, no XP.</p><label>Topic<input class="f" id="gt" maxlength="80"></label><div id="ge" class="e" role="alert" style="min-height:24px"></div><button class="btn glow" id="gb" style="width:100%">Generate</button></div></div>';$('#gt').focus();
+$('#gb').onclick=async()=>{const b=$('#gb'),er=$('#ge');er.textContent='';b.disabled=true;b.textContent='Building...';try{const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:$('#gt').value.trim()})});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(r.status===401?'Log in first.':(j.error||'Could not generate.'));GEN=toChallenge(j);location.hash='ch-gen'}catch(e){er.textContent=e.message;b.disabled=false;b.textContent='Generate'}}}
+async function explain(text,put){if(!text.trim()){put('Nothing to explain yet. Run a command first, or type: explain <error text>','m');return}put('Sensei is reading it...','m');
+try{const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});const j=await r.json().catch(()=>({}));put(r.ok?'Sensei'+(j.source==='ai'?' (AI)':'')+': '+j.answer:(r.status===401?'Log in to use explain.':(j.error||'Explain is unavailable.')),r.ok?'o':'e')}catch(e){put('Explain needs the Dojo server (npm start).','e')}}
+function chat(ch,onFirst){const box=document.createElement('div');box.className='card chat';box.innerHTML='<b>Sensei chat</b> <small style="color:var(--m)">Sensei asks questions instead of handing you the answer. First message costs 10 XP, like a hint.</small><div id="cm" aria-live="polite"></div><div style="display:flex;gap:8px;margin-top:8px"><input class="f" id="ci" style="margin:0" placeholder="Tell Sensei what you tried..." maxlength="300" aria-label="Message to Sensei"><button class="btn" id="cs">Send</button></div>';$('#hs').after(box);const msgs=[];let first=true;
+const add=(who,t)=>{const d=document.createElement('div');d.className='cmsg '+who;d.textContent=(who==='me'?'You: ':'Sensei: ')+t;$('#cm').appendChild(d);return d};
+const send=async()=>{const i=$('#ci'),t=i.value.trim();if(!t)return;i.value='';add('me',t);msgs.push({role:'user',content:t});if(first){first=false;onFirst()}const w=add('ai','...');
+try{const files={};(ch.edit||[]).forEach(e=>{const k=e[0]==='/'?e:HOME+'/'+e;if(fs[k])files[e]=fs[k].c});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge:ch.id,messages:msgs.slice(-8),history:S.hist.slice(-8),files})});const j=await r.json().catch(()=>({}));const a=r.ok?j.answer:(r.status===401?'Log in to chat with Sensei.':(j.error||'Sensei is unavailable.'));w.textContent='Sensei: '+a;if(r.ok)msgs.push({role:'assistant',content:a})}catch(e){w.textContent='Sensei is offline here. Use the Hint button.'}};
+$('#cs').onclick=send;$('#ci').onkeydown=e=>{if(e.key==='Enter')send()}}
+async function cert(){app.innerHTML='<div class="wrap"><h2>Your certificate</h2><p id="cs2" style="color:var(--m)">Checking your progress...</p><canvas id="cv" width="1200" height="850" style="display:none;max-width:100%;border:1px solid var(--l);border-radius:12px" aria-label="Certificate of completion"></canvas><p><button class="btn glow" id="cd" hidden>Download PNG</button></p></div>';
+try{const r=await fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json().catch(()=>({}));if(!r.ok){$('#cs2').textContent=r.status===401?'Log in to get your certificate.':(j.error||'Certificate is not available yet.');return}
+$('#cs2').textContent='Congratulations, '+j.name+'! Your certificate is ready.';try{await document.fonts.ready}catch(e){}drawCert($('#cv'),j);$('#cv').style.display='block';const b=$('#cd');b.hidden=false;
+b.onclick=()=>$('#cv').toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='debug-dojo-certificate-'+j.name+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)})}catch(e){$('#cs2').textContent='Certificates need the Dojo server (run npm start).'}}
+function drawCert(cv,j){const x=cv.getContext('2d'),W=cv.width,H=cv.height,bt=belt(j.xp),F="'Bricolage Grotesque',Arial,sans-serif";const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#070b10');g.addColorStop(1,'#0d1f2b');x.fillStyle=g;x.fillRect(0,0,W,H);
+x.strokeStyle='#39ff88';x.lineWidth=6;x.strokeRect(30,30,W-60,H-60);x.strokeStyle='#27e0ff';x.lineWidth=2;x.strokeRect(46,46,W-92,H-92);x.textAlign='center';
+x.fillStyle='#39ff88';x.font="700 22px 'JetBrains Mono',monospace";x.fillText('>_ DEBUG DOJO',W/2,120);x.fillStyle='#dbe7f0';x.font='700 58px '+F;x.fillText('Certificate of Completion',W/2,230);x.fillStyle='#8196a8';x.font='24px '+F;x.fillText('This certifies that',W/2,320);
+let sz=84;x.fillStyle='#27e0ff';x.font='700 '+sz+'px '+F;while(x.measureText(j.name).width>W-200&&sz>30){sz-=4;x.font='700 '+sz+'px '+F}x.fillText(j.name,W/2,430);
+x.fillStyle='#dbe7f0';x.font='28px '+F;x.fillText('has completed all '+j.total+' Linux and DevSecOps challenges',W/2,510);x.fillText('with '+j.xp+' XP and earned the '+bt[0]+' Belt.',W/2,556);x.fillStyle=bt[2];x.fillRect(W/2-120,590,240,16);
+x.fillStyle='#8196a8';x.font="20px 'JetBrains Mono',monospace";x.fillText('Issued '+j.date+'  |  Certificate ID '+j.id,W/2,700);x.fillText('Verify: '+location.origin+'/api/verify/'+j.id,W/2,740)}
+async function room(code){app.innerHTML=`<div class="wrap"><h2>Team rooms</h2><p style="color:var(--m)">Create a room for your class or team, share the code, and watch everyone's progress.</p><div id="rl" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div><div class="top2"><div class="card"><label>New room name<input class="f" id="rn" maxlength="40"></label><button class="btn" id="rc">Create room</button></div><div class="card"><label>Join with code<input class="f" id="rj" maxlength="6" autocapitalize="characters"></label><button class="btn" id="rb">Join</button></div></div><div id="re" class="e" role="alert" style="min-height:24px"></div><div id="rt"></div></div>`;
+const J=async(u,b)=>{const r=await fetch(u,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j},go=async f=>{$('#re').textContent='';try{await f()}catch(e){$('#re').textContent=e.message}};
+go(async()=>{const L=await J('/api/rooms');$('#rl').innerHTML=L.map(x=>`<a class="btn" href="#room-${x.code}">${esc(x.name)} · ${x.code}</a>`).join('')||'<span style="color:var(--m)">No rooms yet.</span>'});
+$('#rc').onclick=()=>go(async()=>{const j=await J('/api/rooms',{name:$('#rn').value.trim()});location.hash='room-'+j.code});$('#rb').onclick=()=>go(async()=>{const j=await J('/api/rooms/join',{code:$('#rj').value.trim()});location.hash='room-'+j.code});
+if(code)go(async()=>{const j=await J('/api/rooms/'+encodeURIComponent(code));$('#rt').innerHTML=`<h3>${esc(j.name)} <span class="chip">${esc(j.code)}</span></h3><div class="card lb">${j.members.map((m,i)=>`<div><span>${i+1}. ${esc(m.user)}${m.user===j.owner?' (teacher)':''}</span><span class="mono">${m.solved}/${CH.length} · ${m.xp} XP</span></div>`).join('')}</div>`})}
+const SEC={Permissions:['🔐','Who can read, write and run'],Hardening:['🛡️','Lock the server down'],Secrets:['🗝️','Keep secrets out of code'],Incident:['🚨','Respond to an attack'],DevSecOps:['⚙️','Secure the pipeline']};
+const stars=c=>{const n=c.xp>=100?3:c.xp>=80?2:1;return '★'.repeat(n)+'☆'.repeat(3-n)};
+const card=c=>{const d=SV.done[c.id];return `<a class="cc ${d?'done':''}" href="#ch-${c.id}"><span class="stars" title="Difficulty">${stars(c)}</span><h3 style="margin:8px 0 4px">${c.title}</h3><span style="color:var(--m)">${c.xp} XP ${d?'· ✔ '+fmt(d.t)+(d.h===0?' · no hints':''):'· not started'}</span></a>`};
+function sections(){return [...new Set(CH.map(c=>c.cat))].map(cat=>{const L=CH.filter(c=>c.cat===cat),n=L.filter(c=>SV.done[c.id]).length,full=n===L.length,i=SEC[cat]||['📁',''],xp=L.reduce((a,c)=>a+c.xp,0);
+return `<section class="sec ${full?'cleared':''}"><div class="sh"><h3>${i[0]} ${cat}</h3><span class="mono">${n}/${L.length} done${full?' · 🏆 cleared +'+BONUS+' XP':' · clear all for +'+BONUS+' bonus XP'}</span></div><small style="color:var(--m)">${i[1]} · ${xp} XP</small><div class="bar" style="margin-top:6px"><i style="width:${Math.round(n/L.length*100)}%"></i></div><div class="cards" style="margin-top:12px">${L.map(card).join('')}</div></section>`}).join('')}
+const GOALS=(()=>{const ran=re=>S.hist.some(h=>re.test(h)),F=p=>fs[HOME+'/'+p]||{c:'',m:'---------'},df=()=>F('Dockerfile').c,pol=()=>F('policy.json').c,lj=()=>F('login.js').c,
+cfg=k=>{const l=(fs['/etc/ssh/sshd_config']||{c:''}).c.split('\n').map(x=>x.trim()).find(x=>x[0]!=='#'&&x.toLowerCase().startsWith(k));return l?l.split(/\s+/)[1].toLowerCase():''},
+ver=n=>{try{return String(JSON.parse(F('package.json').c).dependencies[n]).replace(/^[^\d]*/,'').split('.').map(Number)}catch(e){return [0]}},
+ge=(a,b)=>{for(let i=0;i<3;i++)if((a[i]||0)!==b[i])return (a[i]||0)>b[i];return true};
+return {
+perm:[['Run the script and read the error',()=>ran(/deploy\.sh/)],['Fix the file permission',()=>/x/.test(F('deploy.sh').m)],['Deploy successfully',()=>S.won]],
+sshkey:[['Try to connect and read the warning',()=>ran(/^ssh\b/)],['Lock down the private key',()=>F('.ssh/id_rsa').m.slice(3)==='------'],['Connect to prod',()=>S.won]],
+secret:[['Run the audit',()=>ran(/audit\.sh/)],['Protect db_password.txt',()=>F('db_password.txt').m==='rw-------'],['Protect backup.sql',()=>F('backup.sql').m.slice(6)==='---'],['Pass the audit',()=>S.won]],
+sshd:[['Run the SSH audit',()=>ran(/ssh-audit/)],['Disable root login',()=>cfg('permitrootlogin')==='no'],['Disable password logins',()=>cfg('passwordauthentication')==='no'],['Reject empty passwords',()=>cfg('permitemptypasswords')==='no'],['Pass the audit',()=>S.won]],
+leak:[['Search the repo for secrets',()=>ran(/grep\s+-\w*r/)],['Remove the key from the code',()=>!/AKIA[0-9A-Z]{16}/.test(F('app/config.js').c)],['Keep .env out of git',()=>/^\.env$/m.test(F('app/.gitignore').c)],['Pass the secret scan',()=>S.won]],
+brute:[['Read the auth log',()=>ran(/auth\.log/)],['Count the attempts per IP',()=>ran(/uniq/)],['Block the attacker',()=>(S.fw||[]).includes('203.0.113.9')],['Do it without locking out your admin',()=>S.won]],
+miner:[['Find the busy process',()=>ran(/\bps\b/)],['Stop it',()=>!S.procs.some(p=>p.pid===666)],['Delete the file it runs from',()=>!fs['/tmp/.kswapd0']]],
+dockerfile:[['Run the linter',()=>ran(/hadolint/)],['Remove the baked-in secret',()=>!/^\s*(ENV|ARG)\s+\w*(PASS|SECRET|TOKEN|KEY)/mi.test(df())],['Run as a non-root user',()=>/^USER\s+(?!root\b|0\b)\S+/m.test(df())],['Pin the base image and close port 22',()=>!/^FROM\s+\S+:latest\b/m.test(df())&&!/^EXPOSE\b.*\b22\b/m.test(df())],['Pass the lint',()=>S.won]],
+trivy:[['Run the scan',()=>ran(/trivy/)],['Upgrade the base image',()=>{const m=df().match(/^FROM\s+\S*node:(\d+)/m);return !!m&&+m[1]>=18}],['Pass the scan',()=>S.won]],
+deps:[['Run the audit',()=>ran(/npm audit/)],['Fix lodash',()=>ge(ver('lodash'),[4,17,21])],['Fix minimist',()=>ge(ver('minimist'),[1,2,6])],['Pass the audit',()=>S.won]],
+iam:[['Run the IAM audit',()=>ran(/audit-iam/)],['Remove the wildcards',()=>!/"\*"/.test(pol())&&!/:\*"/.test(pol())],['Allow only what the service needs',()=>/s3:GetObject/.test(pol())],['Pass the audit',()=>S.won]],
+sqli:[['Run the injection test',()=>ran(/sqltest/)],['Stop gluing input into the SQL',()=>!/['"]\s*\+\s*(name|pass)\b|\b(name|pass)\s*\+\s*['"]/.test(lj())],['Use placeholders',()=>/SELECT[^;\n]*(\?|\$1)/.test(lj())],['Pass the test',()=>S.won]],
+ports:[['List the listening ports',()=>ran(/\bss\b/)],['Block the MySQL port 3306',()=>(S.fwp||[]).includes('3306')],['Block the Redis port 6379',()=>(S.fwp||[]).includes('6379')],['Keep SSH and web open',()=>S.won]]}})();
+function mission(ch){const G=GOALS[ch.id],box=$('#ms');if(!G){if(box)box.hidden=true;return}
+S.gd=[];let ready=false;
+const draw=()=>{const n=S.gd.filter(Boolean).length;box.innerHTML=`<b>Mission</b> <span class="mono" style="float:right">${n}/${G.length}</span><div class="bar" style="margin-top:6px"><i style="width:${Math.round(n/G.length*100)}%"></i></div><ul>${G.map(([t],i)=>`<li class="${S.gd[i]?'ok':''}">${S.gd[i]?'✔':'○'} ${t}</li>`).join('')}</ul>`;const tt=$('#tt');if(tt)tt.textContent='bash - dojo@dojo · objectives '+n+'/'+G.length};
+S.tick=()=>{G.forEach(([t,f],i)=>{if(S.gd[i])return;let ok=false;try{ok=!!f()}catch(e){}if(ok){S.gd[i]=1;if(ready)S.put('✔ Objective complete: '+t,'o')}});ready=true;draw()};
+S.tick()}
+const LESSONS=(()=>{const ran=re=>S.hist.some(h=>re.test(h)),F=p=>fs[HOME+'/'+p],LOG='INFO server started\nINFO listening on 3000\nWARN slow query\nERROR db connection lost\nINFO retrying\nERROR db connection lost\nINFO connected\nWARN disk 85%\nINFO request GET /\nERROR timeout\nINFO request GET /about\nINFO shutdown\n';
+return [
+{id:'nav',title:'Where am I? Moving around',intro:'Linux is a tree of folders. pwd shows where you are, ls shows what is inside, cd moves you. ~ means your home folder and .. means one level up. Names starting with a dot are hidden until you use ls -a.',cmds:[['pwd','print the current folder'],['ls -la','list everything (hidden too) with details'],['cd projects','go into a folder'],['cd ..','go up one level'],['cd ~','go back home']],files:{'readme.txt':{c:'Welcome to Linux!\n'},'.secret-note':{c:'hidden files start with a dot\n'},'projects/web/index.html':{c:'<h1>Hello</h1>\n'},'projects/notes.md':{c:'# notes\n'}},
+tasks:[['Print your current folder with pwd',()=>ran(/^pwd\b/)],['Show hidden files with ls -a',()=>ran(/^ls\s+-\w*a/)],['Go into the projects folder',()=>ran(/^cd\s+projects/)],['Return to your home folder',()=>S.cwd===HOME&&ran(/^cd\s+projects/)]]},
+{id:'files',title:'Create, copy, move, delete',intro:'mkdir makes a folder, touch makes an empty file, cp copies, mv moves or renames, rm deletes. There is no recycle bin, so be careful. tree draws your folders.',cmds:[['mkdir practice','make a folder'],['touch a.txt','make an empty file'],['cp a.txt b.txt','copy a file'],['mv b.txt c.txt','rename or move'],['rm c.txt','delete a file'],['rm -r folder','delete a folder and its contents'],['tree','draw folders as a tree']],files:{},
+tasks:[['Make a folder called practice',()=>!!F('practice')&&!!F('practice').d],['Create practice/hello.txt',()=>!!F('practice/hello.txt')],['Copy it to practice/copy.txt',()=>!!F('practice/copy.txt')],['Rename copy.txt to backup.txt (mv)',()=>!!F('practice/backup.txt')&&!F('practice/copy.txt')],['Delete hello.txt but keep backup.txt',()=>ran(/hello\.txt/)&&!F('practice/hello.txt')&&!!F('practice/backup.txt')]]},
+{id:'read',title:'Reading files',intro:'cat prints a whole file. For big files use head (first lines), tail (last lines) and wc -l (count lines). This is how you read logs.',cmds:[['cat server.log','show everything'],['head -n 3 server.log','first 3 lines'],['tail -n 2 server.log','last 2 lines'],['wc -l server.log','count the lines']],files:{'server.log':{c:LOG}},
+tasks:[['Read the whole file with cat',()=>ran(/^cat\s+server\.log/)],['Show only the first 3 lines (head)',()=>ran(/^head\s+(-n\s*3|-3)\b/)],['Show only the last 2 lines (tail)',()=>ran(/^tail\s+(-n\s*2|-2)\b/)],['Count the lines with wc -l',()=>ran(/^wc\s+-l/)]]},
+{id:'search',title:'Searching text and files',intro:'grep finds lines that contain a word. -i ignores upper/lower case, -n shows line numbers, -r searches inside folders. find looks for files by name.',cmds:[['grep ERROR server.log','lines containing ERROR'],['grep -i warn server.log','ignore case'],['grep -n ERROR server.log','show line numbers'],['grep -r TODO .','search inside all files'],["find . -name '*.txt'",'find files by name']],files:{'server.log':{c:LOG},'docs/a.txt':{c:'TODO: write docs\n'},'docs/b.txt':{c:'done\n'},'docs/c.md':{c:'# guide\n'}},
+tasks:[['Find ERROR lines: grep ERROR server.log',()=>ran(/^grep\s+ERROR\s+server\.log/)],['Search ignoring case: grep -i warn server.log',()=>ran(/^grep\s+-\w*i\w*\s+warn/)],['Count the errors with a pipe into wc -l',()=>ran(/grep.*ERROR.*\|\s*wc\s+-l/)],["Find all .txt files with find -name",()=>ran(/^find\b.*-name\s+["']?\*\.txt/)]]},
+{id:'pipes',title:'Pipes and redirects',intro:'A pipe | sends the output of one command into the next. > writes output into a file (replacing it) and >> adds to the end. Combining small commands is the Linux superpower.',cmds:[['echo hello > greet.txt','write into a file'],['echo world >> greet.txt','add a line to the file'],['sort names.txt | uniq -c','count repeated names'],['... | sort -rn','biggest count first']],files:{'names.txt':{c:'asha\nravi\nasha\nkai\nravi\nasha\n'}},
+tasks:[['Write with >: echo hello > greet.txt',()=>!!F('greet.txt')],['Append with >>: add the line world',()=>!!F('greet.txt')&&F('greet.txt').c==='hello\nworld\n'],['Count names: sort names.txt | uniq -c',()=>ran(/sort\s+names\.txt\s*\|\s*uniq\s+-c/)],['Put the most common name first (add | sort -rn)',()=>ran(/uniq\s+-c\s*\|\s*sort\s+-\w*r/)]]},
+{id:'perm',title:'Permissions',intro:'ls -l shows permissions like -rw-r--r--: three groups (owner, group, others) of r (read), w (write), x (run). chmod changes them. Numbers add up: 4 read + 2 write + 1 run, so 600 = owner read/write only and 755 = owner everything, others read/run.',cmds:[['ls -l','see permissions'],['chmod +x run.sh','make a file runnable'],['chmod 600 secret.txt','only the owner can read/write'],['chmod 755 run.sh','owner all, others read/run'],['stat run.sh','details of a file']],files:{'run.sh':{c:'#!/bin/sh\n',m:'rw-r--r--',run:()=>'Hello from run.sh! It ran because it has the x bit.'},'secret.txt':{c:'my password\n',m:'rw-rw-rw-'}},
+tasks:[['Look at permissions with ls -l',()=>ran(/^ls\s+-\w*l/)],['Make run.sh runnable (chmod +x)',()=>!!F('run.sh')&&/x/.test(F('run.sh').m)],['Run it: ./run.sh',()=>ran(/^\.\/run\.sh/)&&/x/.test(F('run.sh').m)],['Make secret.txt owner-only (600)',()=>!!F('secret.txt')&&F('secret.txt').m==='rw-------']]},
+{id:'proc',title:'Processes',intro:'Every running program is a process with a number called a pid. ps aux lists them (look at the CPU column), and kill stops one by its pid. Be careful: never kill what you do not recognise as the problem.',cmds:[['ps aux','list all processes'],['kill 900','ask a process to stop'],['kill -9 900','force it to stop'],['ps aux | grep sleep','find one process']],procs:[{pid:900,u:'dojo',c:'45.0',cmd:'sleep 9999'},{pid:901,u:'dojo',c:'0.0',cmd:'tail -f /var/log/syslog'}],files:{},
+tasks:[['List the processes with ps aux',()=>ran(/^ps\b/)],['Find just the sleep process: ps aux | grep sleep',()=>ran(/ps.*\|\s*grep\s+sleep/)],['Stop the sleep process (kill 900)',()=>!S.procs.some(p=>p.pid===900)],['Leave the other process (pid 901) running',()=>!S.procs.some(p=>p.pid===900)&&S.procs.some(p=>p.pid===901)]]},
+{id:'net',title:'Network and firewall basics',intro:'Programs listen on ports. ss -tlnp shows which ones. A firewall (ufw) decides who can reach them. Public things like SSH (22) and web (80) stay open; databases (3306, 6379) should not be reachable from outside.',cmds:[['ss -tlnp','list listening ports'],['sudo ufw status','show firewall rules'],['sudo ufw deny 3306','block a port'],['sudo ufw deny from 1.2.3.4','block an address'],['ssh prod','log in to another computer']],files:{},
+tasks:[['List the listening ports with ss -tlnp',()=>ran(/^ss\b/)],['Look at the firewall rules (ufw status)',()=>ran(/ufw\s+status/)],['Block the MySQL port 3306',()=>(S.fwp||[]).includes('3306')],['Read the manual: man ufw',()=>ran(/^man\s+ufw/)]]},
+{id:'help',title:'Get unstuck: man, history, Tab',intro:'Nobody remembers every command. man <command> explains one, which tells you if it exists, history shows what you typed, and the Tab key completes names. Use ↑ and ↓ to bring back old commands. Type explain to have Sensei decode an error.',cmds:[['man grep','manual for a command'],['which ls','does this command exist?'],['history','what did I type before?'],['cut -d: -f1 /etc/passwd','list user names (a real-world one-liner)'],['Tab key','complete file and command names']],files:{},
+tasks:[['Open a manual: man grep',()=>ran(/^man\s+grep/)],['Check a command exists: which ls',()=>ran(/^which\s+\w+/)],['List the user names: cut -d: -f1 /etc/passwd',()=>ran(/^cut\s+-d\s*:\s+-f\s*1\s+\/etc\/passwd/)],['Show your history',()=>ran(/^history\b/)]]}
+]})();
+function localTutor(t,L){const w=t.toLowerCase().match(/[a-z][\w-]*/g)||[],hit=w.find(x=>MAN.hasOwnProperty(x));if(hit){const m=MAN[hit];return m[0]+'\n'+m[1]+'\nExample: '+m[2]+'\n(The AI tutor is offline, this is the built-in manual.)'}return L?'The AI tutor is offline right now. This lesson in short: '+L.intro+'\nTry the commands on the left, or type man <command> in the terminal.':'The AI tutor is offline right now. Open a lesson, or type man <command> in any terminal.'}
+function tutor(host,L){const box=document.createElement('div');box.className='card chat';box.innerHTML='<b>🎓 Dojo Tutor</b> <span class="tutor-note">Ask anything about Linux and security. Unlike Sensei, the tutor explains fully and gives examples.</span><div id="tm" aria-live="polite" style="max-height:340px;overflow:auto"></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0"><button class="btn sm" data-q="Explain this step by step with small examples">'+(L?'Explain this lesson':'What should I learn first?')+'</button><button class="btn sm" data-q="Quiz me with 3 short questions, one at a time">Quiz me</button><button class="btn sm" data-q="Show a real-world example where this is used">Real example</button></div><div style="display:flex;gap:8px"><input class="f" id="ti" style="margin:0" maxlength="300" placeholder="Ask the tutor anything..." aria-label="Ask the tutor"><button class="btn" id="ts">Ask</button></div>';host.appendChild(box);
+const msgs=[],add=(w,t)=>{const d=document.createElement('div');d.className='cmsg '+w;d.textContent=(w==='me'?'You: ':'Tutor: ')+t;$('#tm').appendChild(d);$('#tm').scrollTop=1e9;return d};
+const ask=async t=>{t=t.trim();if(!t)return;$('#ti').value='';add('me',t);msgs.push({role:'user',content:t});const w=add('ai','...');let a='';
+try{const r=await fetch('/api/tutor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lesson:L?L.id:'',messages:msgs.slice(-8),history:S&&S.hist?S.hist.slice(-8):[]})});const j=await r.json().catch(()=>({}));a=r.ok&&j.source==='ai'?j.answer:r.status===401?'Log in to use the tutor.':localTutor(t,L)}catch(e){a=localTutor(t,L)}
+w.textContent='Tutor: '+a;msgs.push({role:'assistant',content:a})};
+$('#ts').onclick=()=>ask($('#ti').value);$('#ti').onkeydown=e=>{if(e.key==='Enter')ask($('#ti').value)};box.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q))}
+function learn(id){SV.learn=SV.learn||{};const L=LESSONS.find(x=>x.id===id);
+if(!L){app.innerHTML='<div class="wrap"><h2>🎓 Academy: learn Linux from zero</h2><p style="color:var(--m)">New to Linux? Start here. Each lesson explains a few commands, then gives you a practice terminal with small tasks. Ask the tutor anything at any time. Lessons give no XP; they get you ready for the challenges.</p><div class="cards">'+LESSONS.map((l,i)=>'<a class="cc '+(SV.learn[l.id]?'done':'')+'" href="#learn-'+l.id+'"><span class="chip">Lesson '+(i+1)+'</span><h3 style="margin:8px 0 4px">'+l.title+'</h3><span style="color:var(--m)">'+l.tasks.length+' tasks '+(SV.learn[l.id]?'· ✔ done':'')+'</span></a>').join('')+'</div><div id="th2" style="margin:20px 0 40px"></div></div>';tutor($('#th2'),null);return}
+const i=LESSONS.indexOf(L),nx=LESSONS[i+1],T=L.tasks;
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#learn">← Academy</a><b>Lesson ${i+1}: ${L.title}</b></div><div class="grid"><div><div class="card les"><p style="margin:0 0 10px">${L.intro}</p><table style="width:100%;border-collapse:collapse;font-size:14px">${L.cmds.map(([c,d])=>`<tr><td class="mono" style="color:var(--g);padding:3px 10px 3px 0;white-space:nowrap">${esc(c)}</td><td style="color:var(--m)">${esc(d)}</td></tr>`).join('')}</table></div><div class="card" id="ms" style="margin-top:14px"></div>${edHTML}</div>${termHTML}</div><div id="th2" style="margin:16px 0 40px"></div></div>`;
+boot({id:'lesson-'+L.id,files:L.files,edit:[],procs:L.procs});S.O.innerHTML='';S.put('Practice terminal for this lesson. Try the commands on the left. Type help or man <command>.','o');
+S.gd=[];let ready=false;
+const draw=()=>{const n=S.gd.filter(Boolean).length;$('#ms').innerHTML=`<b>Practice tasks</b> <span class="mono" style="float:right">${n}/${T.length}</span><div class="bar" style="margin-top:6px"><i style="width:${Math.round(n/T.length*100)}%"></i></div><ul>${T.map(([t],k)=>`<li class="${S.gd[k]?'ok':''}">${S.gd[k]?'✔':'○'} ${esc(t)}</li>`).join('')}</ul>${n===T.length?`<p style="color:var(--y)">🎓 Lesson complete!</p><a class="btn glow" href="${nx?'#learn-'+nx.id:'#dojo'}">${nx?'Next lesson':'Go to the challenges'}</a>`:''}`;const tt=$('#tt');if(tt)tt.textContent='bash - practice · tasks '+n+'/'+T.length};
+S.tick=()=>{T.forEach(([t,f],k)=>{if(S.gd[k])return;let ok=false;try{ok=!!f()}catch(e){}if(ok){S.gd[k]=1;if(ready)S.put('✔ Task complete: '+t,'o')}});ready=true;if(S.gd.filter(Boolean).length===T.length&&!SV.learn[L.id]){SV.learn[L.id]=true;save();S.put('🎓 Lesson complete!','o')}draw()};
+S.tick();tutor($('#th2'),L)}
+let PRE='';
+const stem=w=>{const r=w.replace(/(ies|ied)$/,'y').replace(/(ing|ed|es|s)$/,'');return r.length>=2?r:w};
+const hit=(c,q)=>{const t=(c+' '+MAN[c][1]+' '+MAN[c][0]).toLowerCase(),ws=t.split(/[^a-z0-9]+/).map(stem);return t.includes(q)||q.split(/\s+/).every(w=>ws.some(x=>x.startsWith(stem(w))))};
+function cmds(){app.innerHTML=`<div class="wrap"><h2>📖 Command reference</h2><p style="color:var(--m)">${Object.keys(MAN).length} commands work in the practice terminals. Search, read what each one does, and press <b>Try</b> to open the Linux Lab with the example ready to run. Commands are simulated: safe to experiment with, and a few behave in a simplified way.</p><input class="f" id="cq" placeholder="Search commands (try: copy, permission, port, text)..." aria-label="Search commands"><div id="cl" style="margin-bottom:40px"></div></div>`;
+const draw=q=>{q=q.trim().toLowerCase();const html=CATS.map(([t,L])=>{const rows=L.filter(c=>MAN[c]&&(!q||hit(c,q)));return rows.length?`<h3 style="margin:22px 0 6px">${t} <small class="mono" style="color:var(--m)">${rows.length}</small></h3><div class="card" style="padding:6px 14px">${rows.map(c=>`<div class="cmd"><div><span class="mono" style="color:var(--g)">${esc(c)}</span> <span style="color:var(--m)">${esc(MAN[c][1])}</span><br><code class="mono" style="font-size:12px">${esc(MAN[c][2])}</code></div><button class="btn sm" data-t="${esc(MAN[c][2])}">▶ Try</button></div>`).join('')}</div>`:''}).join('');
+$('#cl').innerHTML=html||'<p style="color:var(--m)">No command matches that. Try another word.</p>';$('#cl').querySelectorAll('[data-t]').forEach(b=>{b.onclick=()=>{PRE=b.dataset.t;location.hash='lab'}})};
+$('#cq').oninput=e=>draw(e.target.value);draw('');$('#cq').focus()}
+const RM=()=>{try{return matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}};
+const countUp=el=>{const m=el.textContent.trim().match(/^(\d+)(\+?)$/);if(!m||RM())return;const n=+m[1],suf=m[2],t0=performance.now(),f=now=>{const k=Math.min(1,(now-t0)/900);el.textContent=Math.round(n*(1-Math.pow(1-k,3)))+suf;if(k<1)requestAnimationFrame(f)};el.textContent='0'+suf;requestAnimationFrame(f)};
+let CIO=null;
+function polish(){try{const a=$('#app');if(!a)return;a.classList.remove('enter');void a.offsetWidth;a.classList.add('enter');
+a.querySelectorAll('.cards,.top2,.stats').forEach(g=>[...g.children].forEach((c,i)=>c.style.setProperty('--i',i)));
+a.querySelectorAll('.sec').forEach((c,i)=>c.style.setProperty('--i',i));
+if(!CIO&&typeof IntersectionObserver!=='undefined')CIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('b').forEach(countUp);CIO.unobserve(e.target)}}),{threshold:.4});
+if(CIO)a.querySelectorAll('.stats,.top2').forEach(g=>CIO.observe(g));
+const h=(location.hash.slice(1)||'home').split('-')[0];document.querySelectorAll('header nav a').forEach(l=>{const t=(l.getAttribute('href')||'').slice(1);l.classList.toggle('on',t===h||(h==='ch'&&t==='dojo'))})}catch(e){}}
+function chal(id){const ch=CH.find(c=>c.id===id)||(id==='gen'&&GEN);if(!ch)return dojo();let hn=0;const rw=()=>Math.max(10,ch.xp-hn*10),t0=Date.now();
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>${ch.title} <span class="chip">${ch.cat}</span></b><span class="mono" id="tm">00:00</span><span>Reward <b id="rw" style="flex:none">${rw()}</b> XP</span><button class="btn" id="ai">Ask AI Sensei (−10 XP)</button><button class="btn" id="hb">Hint (−10 XP)</button></div>
+<div class="grid"><div><div class="card"><p style="margin:0">${ch.story}</p></div><div class="card" id="ms"></div><div id="hs"></div>${edHTML}</div>${termHTML}</div></div>`;
+$('#rw').textContent=rw();TM=setInterval(()=>$('#tm').textContent=fmt((Date.now()-t0)/1000|0),1000);
+$('#hb').onclick=()=>{if(hn>=ch.hints.length)return;const d=document.createElement('div');d.className='hint';d.textContent='Sensei: '+ch.hints[hn++];$('#hs').appendChild(d);$('#rw').textContent=rw();if(hn>=ch.hints.length)$('#hb').disabled=true};
+boot(ch);mission(ch);chat(ch,()=>{hn++;$('#rw').textContent=rw()});
+$('#ai').onclick=async()=>{const d=document.createElement('div');d.className='hint';d.textContent='Sensei is thinking...';$('#hs').appendChild(d);hn++;$('#rw').textContent=rw();
+const files={};ch.edit.forEach(e=>{const k=e[0]==='/'?e:HOME+'/'+e;if(fs[k])files[e]=fs[k].c});
+try{const r=await fetch('/api/sensei',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge:id,history:S.hist.slice(-8),files})});const j=await r.json();d.textContent='Sensei'+(j.source==='ai'?' (AI)':'')+': '+(j.answer||j.error)}catch(e){d.textContent='Sensei is offline here - use the Hint button.'}};
+S.onWin=()=>{clearT();let bonusNow=0;const t=(Date.now()-t0)/1000|0,first=!SV.done[id]&&id!=='gen',gain=first?rw():0,b0=belt(SV.xp);if(first){SV.done[id]={t,h:hn};SV.xp+=gain;if(CH.filter(c=>c.cat===ch.cat).every(c=>SV.done[c.id])){bonusNow=BONUS;SV.xp+=BONUS}if(SV.last!==day()){SV.streak=SV.last===day(1)?SV.streak+1:1;SV.last=day()}save();sync()}const b1=belt(SV.xp),nx=CH.find(c=>!SV.done[c.id]);
+setTimeout(()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-label="Challenge solved"><div class="big">+${gain+bonusNow} XP</div>${bonusNow?`<p style="color:var(--y)">🏆 Section cleared: ${ch.cat} (+${BONUS} bonus XP)</p>`:''}<h3 style="margin:4px 0">${first?'Bug squashed!':'Practice run complete'}</h3><p class="mono" style="color:var(--m);font-size:13px">Time ${fmt(t)} · Hints ${hn}${b1!==b0?' · New belt: <b style="color:'+b1[2]+'">'+b1[0]+'</b>':''}</p><p><b>What was wrong:</b> ${ch.why}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn glow" style="padding:10px 20px;font-size:16px" href="${nx?'#ch-'+nx.id:'#cert'}">${nx?'Next challenge':'Get your certificate'}</a><button class="btn" id="cl">Keep playing</button><button class="btn" id="sh">Share</button></div></div>`;document.body.appendChild(m);$('#cl').focus();
+$('#cl').onclick=()=>m.remove();$('#sh').onclick=()=>{const msg=`I fixed "${ch.title}" in ${fmt(t)} on Debug Dojo. Beat my time! ${location.origin}${location.pathname}#ch-${id}`;try{(navigator.share?navigator.share({text:msg}):navigator.clipboard.writeText(msg).then(()=>{$('#sh').textContent='Copied!'})).catch(()=>{})}catch(e){}};m.querySelector('a').onclick=()=>m.remove();
+for(let i=0;i<36;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`--x:${(Math.random()-.5)*600}px;--y:${Math.random()*400-250}px;background:${['#39ff88','#27e0ff','#ffd166'][i%3]}`;document.body.appendChild(c);setTimeout(()=>c.remove(),1500)}},500)}}
+function dojo(){const b=belt(SV.xp),nx=BELTS[BELTS.indexOf(b)+1],pct=nx?Math.round((SV.xp-b[1])/(nx[1]-b[1])*100):100,rows=[...RIV,['You',SV.xp]].sort((a,c)=>c[1]-a[1]);
+app.innerHTML=`<div class="wrap"><h2>Your dojo</h2>${USER?`<p style="color:var(--m);margin-top:-14px">Signed in as <b>${USER.username}</b>. Progress syncs to your account.</p>`:`<p style="color:var(--m);margin-top:-14px">Guest mode. <a href="#login">Log in</a> to sync progress and join the live leaderboard.</p>`}<div class="top2"><div class="card"><span>Level</span><b>${Math.floor(SV.xp/100)+1}</b></div><div class="card"><span>XP</span><b>${SV.xp}</b></div><div class="card"><span>Belt</span><b style="color:${b[2]}">${b[0]}</b><div class="bar"><i style="width:${pct}%"></i></div><small style="color:var(--m)">${nx?nx[1]-SV.xp+' XP to '+nx[0]:'Max belt'}</small></div><div class="card"><span>Streak</span><b>🔥 ${stk()}d</b></div></div>
+<a class="cc" href="#learn" style="display:block;margin:6px 0 24px;border-color:var(--c)"><span class="chip">New here?</span><h3 style="margin:8px 0 4px">🎓 Academy: learn Linux from zero</h3><span style="color:var(--m)">${LESSONS.length} short lessons with a practice terminal and an AI tutor that explains everything. No XP, no pressure.</span></a><h2>Challenges</h2>${sections()}<h2 style="margin-top:30px">Practice</h2><div class="cards"><a class="cc" href="#lab" style="border-style:dashed"><span class="chip">Sandbox</span><h3 style="margin:8px 0 4px">Linux Lab</h3><span style="color:var(--m)">Free practice, no goals</span></a><a class="cc" href="#gen" style="border-style:dashed"><span class="chip">AI</span><h3 style="margin:8px 0 4px">AI challenge lab</h3><span style="color:var(--m)">AI builds a new broken setup</span></a><a class="cc" href="#room" style="border-style:dashed"><span class="chip">Team</span><h3 style="margin:8px 0 4px">Team rooms</h3><span style="color:var(--m)">Class or company leaderboard</span></a></div>
+<h2 style="margin-top:44px">Certificate</h2>${dn()>=CH.length?'<a class="btn glow" href="#cert">Get your certificate</a>':'<p style="color:var(--m)">Finish all '+CH.length+' challenges to unlock it ('+dn()+' done).</p>'}<h2 style="margin-top:44px">Badges</h2><ul class="bg">${BADGES.map(([n,d,f])=>`<li class="${f()?'on':''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
+<h2 style="margin-top:44px">Leaderboard</h2><div class="card lb" id="lb" style="margin-bottom:50px">${rows.map((r,i)=>`<div class="${r[0]==='You'?'me':''}"><span>${i+1}. ${r[0]}</span><span class="mono">${r[1]} XP</span></div>`).join('')}<small style="color:var(--m)">Rivals are sample data; your score is saved in this browser.</small></div></div>`;
+fetch('/api/leaderboard').then(r=>r.json()).then(L=>{if(!Array.isArray(L)||!L.length||!$('#lb'))return;$('#lb').innerHTML=L.map((r,i)=>`<div class="${r.id===SV.id?'me':''}"><span>${i+1}. ${r.id===SV.id?'You':r.name}</span><span class="mono">${r.xp} XP</span></div>`).join('')+'<small style="color:var(--m)">Live from the Dojo server.</small>'}).catch(()=>{})}
+function home(){app.innerHTML=`<section class="hero"><canvas aria-hidden="true"></canvas><div class="wrap hg"><div><span class="eyebrow"><i></i>Hands-on Linux &amp; security training</span><h1>Break it.<br>Debug it.<br>Master it.</h1><p class="lead">Fix broken Linux systems and close real security holes in a safe in-browser terminal. Earn XP, climb belts.</p><a class="btn glow" id="go" href="#login">Start Training</a> <a class="btn" href="#lab" style="margin-left:8px">Open Linux Lab</a></div>
+<div class="demo" aria-label="Animated terminal demo"><div class="tb"><i></i><i></i><i></i><span style="margin-left:8px">dojo@dojo</span></div><div class="bd" id="dm"></div></div></div></section>
+<div class="stats"><div><b>${CH.length}</b><span>challenges</span></div><div><b>5</b><span>belts</span></div><div><b>${new Set(CH.map(c=>c.cat)).size}</b><span>categories</span></div><div><b>30+</b><span>Linux commands</span></div></div>
+<section class="s"><div class="wrap"><h2>How it works</h2><div class="cards">
+<div class="card rv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg><h3>Pick a challenge</h3><p>Each one is a broken real-world setup with a short story.</p></div>
+<div class="card rv"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 10l3 2-3 2M12 15h5"/></svg><h3>Fix it in the terminal</h3><p>A mini Linux shell plus a config editor. Commands behave like the real thing.</p></div>
+<div class="card rv"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM7 6H3v2a4 4 0 004 4M17 6h4v2a4 4 0 01-4 4"/></svg><h3>Earn XP and belts</h3><p>Fewer hints and faster fixes pay more. Keep your streak alive.</p></div></div></div></section>
+<section class="s" style="padding-top:0"><div class="wrap"><h2>Belt progression</h2><div class="belts rv">${BELTS.map(b=>`<div class="bt" style="background:${b[2]}">${b[0]}<br><small>${b[1]} XP</small></div>`).join('')}</div></div></section>
+<footer>Debug Dojo · built for DevOps practice · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></footer>`;
+bg($('canvas'));demo($('#dm'));if(USER)$('#go').href='#lab';const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.2});document.querySelectorAll('.rv').forEach(e=>io.observe(e))}
+function bg(cv){const x=cv.getContext('2d'),red=matchMedia('(prefers-reduced-motion:reduce)').matches;let W,Hh,P=[];const rs=()=>{W=cv.width=cv.offsetWidth;Hh=cv.height=cv.offsetHeight;P=Array.from({length:Math.min(60,W/18|0)},()=>({x:Math.random()*W,y:Math.random()*Hh,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))};rs();addEventListener('resize',rs);
+(function f(){if(!document.body.contains(cv))return;x.clearRect(0,0,W,Hh);P.forEach((p,i)=>{if(!red){p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+Hh)%Hh}x.globalAlpha=.7;x.fillStyle='#39ff88';x.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<110){x.globalAlpha=(1-d/110)*.25;x.strokeStyle='#27e0ff';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});if(!red)requestAnimationFrame(f)})()}
+async function demo(el){const w=ms=>new Promise(r=>setTimeout(r,ms)),alive=()=>document.body.contains(el),line=c=>{const d=document.createElement('div');d.className='ln '+(c||'');el.appendChild(d);return d};
+const type=async t=>{const d=line();d.innerHTML='<span class="pr">$</span> <span></span><i class="cur"></i>';const s=d.children[1];for(const c of t){if(!alive())return;s.textContent+=c;await w(55)}d.querySelector('.cur').remove();await w(400)};
+while(alive()){el.innerHTML='';await type('ssh -i ~/.ssh/id_rsa prod');if(!alive())return;line('e').textContent='WARNING: UNPROTECTED PRIVATE KEY FILE! (mode 0644)';await w(1500);await type('chmod 600 ~/.ssh/id_rsa');if(!alive())return;line('o').textContent='✔ Connected to prod. Key is safe.';const x=document.createElement('div');x.className='xp';x.textContent='+50 XP';el.parentElement.appendChild(x);await w(2800);x.remove();await w(500)}}
+function route(){clearT();document.querySelectorAll('.modal').forEach(m=>m.remove());const h=location.hash.slice(1)||'home';if(SERVER&&!USER&&/^(dojo|lab|cert|gen|room.*|learn.*|cmds|ch-.+)$/.test(h)){location.hash='login';return}if(h==='dojo')dojo();else if(h==='lab')lab();else if(h==='login')login();else if(h==='cert')cert();else if(h.startsWith('learn'))learn(h.slice(6));else if(h==='cmds')cmds();else if(h==='gen')gen();else if(h.startsWith('room'))room(h.slice(5));else if(h.startsWith('ch-'))chal(h.slice(3));else home();scrollTo(0,0);polish()}
+let SND=false,AC=null;try{SND=localStorage.getItem('dd_snd')==='1';document.documentElement.dataset.theme=localStorage.getItem('dd_theme')||'dark'}catch(e){}
+const beep=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=600+Math.random()*200;g.gain.value=.03;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+.03)}catch(e){}};
+const setSnd=()=>{$('#sn').textContent=SND?'🔊':'🔇';$('#sn').setAttribute('aria-pressed',String(SND))};setSnd();
+$('#th').onclick=()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=t;try{localStorage.setItem('dd_theme',t)}catch(e){}};
+$('#sn').onclick=()=>{SND=!SND;try{localStorage.setItem('dd_snd',SND?'1':'0')}catch(e){}setSnd();if(SND)beep()};
+document.addEventListener('keydown',e=>{if(SND&&e.target&&e.target.id==='I'&&e.key.length===1)beep()});
+try{const sp=document.createElement('div');sp.id='sp';document.body.appendChild(sp);const hd=$('header.top');
+addEventListener('scroll',()=>{const d=document.documentElement,m=d.scrollHeight-innerHeight;sp.style.width=(m>0?Math.min(100,scrollY/m*100):0)+'%';if(hd)hd.classList.toggle('scrolled',scrollY>8)},{passive:true});
+document.addEventListener('pointermove',e=>{const c=e.target.closest&&e.target.closest('.cc');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.btn');if(!b||RM())return;const r=b.getBoundingClientRect(),s=document.createElement('span');s.className='rp';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';b.appendChild(s);setTimeout(()=>s.remove(),650)});
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(!n.classList||!n.classList.contains('modal')||RM())return;const b=n.querySelector('.big'),x=b&&b.textContent.match(/^\+(\d+) XP$/);if(!x)return;const N=+x[1],t0=performance.now(),f=now=>{const k=Math.min(1,(now-t0)/900);b.textContent='+'+Math.round(N*(1-Math.pow(1-k,3)))+' XP';if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}))).observe(document.body,{childList:true})}catch(e){}
+addEventListener('hashchange',route);setAu();init().then(route);
+</script></body></html>

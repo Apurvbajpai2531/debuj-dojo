@@ -1,0 +1,93 @@
+'use strict';
+const { test, before, after } = require('node:test');
+const assert = require('node:assert');
+const http = require('http');
+const os = require('os');
+const path = require('path');
+process.env.DATA_FILE = path.join(os.tmpdir(), `dojo-v3-${process.pid}.json`);
+try { require('fs').unlinkSync(process.env.DATA_FILE); } catch { /* no old data */ }
+process.env.GROQ_API_KEY = 'test-key';
+const GEN = { title: 'Weak cron script', story: 'A cron script is writable by everyone.', files: [{ path: 'cron.sh', content: '#!/bin/sh\necho hi\n', mode: '777' }], rules: [{ path: 'cron.sh', op: 'mode', val: '750' }], hints: ['ls -l', 'chmod', '750'], why: 'Others can edit it.' };
+const app = require('../server');
+
+let srv, mock, base;
+const seen = [];
+before(() => new Promise((r) => {
+  mock = http.createServer((req, res) => {
+    let b = '';
+    req.on('data', (d) => { b += d; });
+    req.on('end', () => {
+      seen.push(req.headers.authorization);
+      const j = JSON.parse(b);
+      const text = j.messages[0].content.includes('JSON only') ? JSON.stringify(GEN) : 'Which permission bit matters here?';
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({ choices: [{ message: { content: text } }] }));
+    });
+  }).listen(0, () => {
+    process.env.GROQ_BASE_URL = 'http://127.0.0.1:' + mock.address().port;
+    srv = app.listen(0, () => { base = 'http://127.0.0.1:' + srv.address().port; r(); });
+  });
+}));
+after(() => { srv.close(); mock.close(); });
+const post = (u, b, cookie) => fetch(base + u, { method: 'POST', headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, body: JSON.stringify(b) });
+const get = (u, cookie) => fetch(base + u, { headers: cookie ? { cookie } : {} });
+const cookieOf = (r) => r.headers.get('set-cookie').split(';')[0];
+const IDS = ['perm', 'sshkey', 'secret', 'sshd', 'leak', 'brute', 'miner', 'dockerfile', 'trivy', 'deps', 'iam', 'sqli', 'ports'];
+let ck, ck2;
+
+test('AI routes need login', async () => {
+  assert.equal((await post('/api/chat', { challenge: 'perm', messages: [{ role: 'user', content: 'hi' }] })).status, 401);
+  assert.equal((await post('/api/explain', { text: 'x' })).status, 401);
+  assert.equal((await post('/api/generate', { topic: 'cron job' })).status, 401);
+});
+test('chat, explain and generate use the AI (mock)', async () => {
+  ck = cookieOf(await post('/api/auth/register', { username: 'asha', password: 'password123' }));
+  const c = await (await post('/api/chat', { challenge: 'perm', messages: [{ role: 'user', content: 'I tried ls' }], history: ['ls'] }, ck)).json();
+  assert.equal(c.source, 'ai');
+  assert.match(c.answer, /\?/);
+  assert.equal((await (await post('/api/explain', { text: 'bash: ./a: Permission denied' }, ck)).json()).source, 'ai');
+  const g = await (await post('/api/generate', { topic: 'cron job' }, ck)).json();
+  assert.equal(g.title, 'Weak cron script');
+  assert.equal(g.files[0].mode, '777');
+  const sn = await (await post('/api/sensei', { challenge: 'perm', history: ['ls'] }, ck)).json();
+  assert.equal(sn.source, 'ai');
+  assert.ok(seen.length >= 4 && seen.every((h) => h === 'Bearer test-key'));
+});
+test('local fallbacks work without an API key', async () => {
+  const key = process.env.GROQ_API_KEY;
+  delete process.env.GROQ_API_KEY;
+  const e = await (await post('/api/explain', { text: 'bash: ./a: Permission denied' }, ck)).json();
+  assert.equal(e.source, 'local');
+  assert.match(e.answer, /chmod/);
+  assert.equal((await post('/api/generate', { topic: 'cron job' }, ck)).status, 503);
+  process.env.GROQ_API_KEY = key;
+});
+test('certificate is locked until every challenge is solved', async () => {
+  assert.equal((await post('/api/certificate', {}, ck)).status, 403);
+  const done = {};
+  IDS.forEach((id) => { done[id] = { t: 60, h: 0 }; });
+  assert.equal((await post('/api/progress', { done }, ck)).status, 200);
+  const c = await (await post('/api/certificate', {}, ck)).json();
+  assert.equal(c.name, 'asha');
+  assert.equal(c.xp, 1300); // 1050 + 5 sections x 50 bonus
+  assert.match(c.id, /^DD-[0-9A-F]{10}$/);
+  const again = await (await post('/api/certificate', {}, ck)).json();
+  assert.equal(again.id, c.id);
+  const v = await (await get('/api/verify/' + c.id)).json();
+  assert.deepEqual([v.valid, v.name], [true, 'asha']);
+  assert.equal((await (await get('/api/verify/DD-NOPE')).json()).valid, false);
+});
+test('team rooms: create, join, view, privacy', async () => {
+  const r = await post('/api/rooms', { name: 'Class 12A' }, ck);
+  assert.equal(r.status, 201);
+  const { code } = await r.json();
+  ck2 = cookieOf(await post('/api/auth/register', { username: 'ravi', password: 'password123' }));
+  assert.equal((await get('/api/rooms/' + code, ck2)).status, 404);
+  assert.equal((await post('/api/rooms/join', { code: code.toLowerCase() }, ck2)).status, 200);
+  const room = await (await get('/api/rooms/' + code, ck2)).json();
+  assert.equal(room.members.length, 2);
+  assert.equal(room.owner, 'asha');
+  assert.equal(room.members[0].user, 'asha');
+  assert.equal((await post('/api/rooms', { name: '<b>' }, ck)).status, 400);
+  assert.equal((await post('/api/rooms/join', { code: 'ZZZZZZ' }, ck2)).status, 404);
+});

@@ -1,0 +1,57 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+permissions: { contents: read }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: backend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm audit --omit=dev --audit-level=high   # DevSecOps: dependency scan
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2   # DevSecOps: secret scan
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+  codeql:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, security-events: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: { languages: javascript }
+      - uses: github/codeql-action/analyze@v3   # DevSecOps: SAST
+  build:
+    needs: [test, secrets]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t debug-dojo:ci .
+      - uses: aquasecurity/trivy-action@0.28.0   # DevSecOps: image CVE scan
+        with: { image-ref: "debug-dojo:ci", severity: "CRITICAL,HIGH", exit-code: "1", ignore-unfixed: true }
+      - name: Smoke test /health
+        run: |
+          docker run -d --name d -p 3000:3000 debug-dojo:ci
+          for i in $(seq 1 15); do curl -fs localhost:3000/health && exit 0; sleep 1; done
+          docker logs d; exit 1
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [build, codeql]
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - uses: docker/build-push-action@v6
+        with: { context: ., push: true, tags: "ghcr.io/${{ github.repository }}:latest" }
+      # Add your server step here, e.g. ssh + "docker compose pull && docker compose up -d".
