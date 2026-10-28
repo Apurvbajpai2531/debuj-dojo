@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#070b10"><title>Debug Dojo</title>
+<meta name="theme-color" content="#0a0f16"><title>Debug Dojo</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#070b10;--p:#0d141c;--l:#1c2a37;--t:#dbe7f0;--m:#8196a8;--g:#39ff88;--c:#27e0ff;--r:#ff6b78;--y:#ffd166;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#0a0f16;--p:#101823;--l:#1e2a3a;--t:#e6edf5;--m:#93a4b8;--g:#34d399;--c:#38bdf8;--r:#f87171;--y:#fbbf24;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
 *,*:before,*:after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--t);font:16px/1.6 'Bricolage Grotesque',system-ui,sans-serif;overflow-x:hidden}
@@ -13,20 +13,20 @@ a{color:var(--c);text-decoration:none}
 .mono,.term,textarea{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 header.top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;max-width:1120px;margin:0 auto;position:relative;z-index:5}
-header b{font-size:20px;color:var(--g);text-shadow:0 0 18px #39ff8866}
+header b{font-size:20px;color:var(--g);text-shadow:0 0 18px #34d39966}
 header nav{display:flex;gap:18px}header nav a{color:var(--t)}
 .btn{display:inline-block;border:1px solid var(--l);background:var(--p);color:var(--t);padding:10px 18px;border-radius:10px;font:600 15px inherit;font-family:inherit;cursor:pointer;transition:.2s}
 .btn:hover{border-color:var(--c);transform:translateY(-2px)}
-.btn.glow{background:linear-gradient(135deg,var(--g),var(--c));color:#04120a;border:0;padding:15px 30px;font-size:18px;font-weight:800;box-shadow:0 0 28px #39ff8888,0 0 60px #27e0ff44;animation:pl 2.6s infinite}
-@keyframes pl{50%{box-shadow:0 0 40px #39ff88cc,0 0 90px #27e0ff66}}
+.btn.glow{background:linear-gradient(135deg,var(--g),var(--c));color:#04120a;border:0;padding:15px 30px;font-size:18px;font-weight:800;box-shadow:0 0 28px #34d39988,0 0 60px #38bdf844;animation:pl 2.6s infinite}
+@keyframes pl{50%{box-shadow:0 0 40px #34d399cc,0 0 90px #38bdf866}}
 .hero{position:relative;padding:50px 0 80px;overflow:hidden}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%}
-.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(#1c2a3755 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,#1c2a3755 1px,transparent 1px) 0 0/44px 44px;-webkit-mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%)}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(#1e2a3a55 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,#1e2a3a55 1px,transparent 1px) 0 0/44px 44px;-webkit-mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);mask:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%)}
 .hg{position:relative;display:grid;gap:40px;align-items:center}
 @media(min-width:900px){.hg{grid-template-columns:1.05fr 1fr}}
 h1{font-size:clamp(40px,7vw,76px);line-height:1;margin:0 0 18px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,#fff,var(--g) 45%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p.lead{color:var(--m);font-size:19px;max-width:520px;margin:0 0 28px}
-.demo{position:relative;background:#05090dcc;border:1px solid var(--l);border-radius:14px;box-shadow:0 0 60px #27e0ff22;overflow:hidden}
+.demo{position:relative;background:#070b11cc;border:1px solid var(--l);border-radius:14px;box-shadow:0 0 60px #38bdf822;overflow:hidden}
 .demo .tb,.term .tb{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--l);font-size:12px;color:var(--m);align-items:center}
 .tb i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.tb i+i{background:#febc2e}.tb i+i+i{background:#28c840}
 .demo .bd{padding:16px;min-height:150px;font:14px/1.7 'JetBrains Mono',monospace}
@@ -34,48 +34,48 @@ h1{font-size:clamp(40px,7vw,76px);line-height:1;margin:0 0 18px;font-weight:800;
 .cur{display:inline-block;width:8px;height:15px;background:var(--g);vertical-align:-2px;animation:bk 1s steps(1) infinite}@keyframes bk{50%{opacity:0}}
 .xp{position:absolute;right:16px;top:50px;background:var(--g);color:#04120a;font-weight:800;padding:6px 14px;border-radius:999px;box-shadow:0 0 24px var(--g);animation:up 2.4s forwards}
 @keyframes up{0%{transform:translateY(20px);opacity:0}15%{transform:none;opacity:1}85%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
-.stats{display:flex;flex-wrap:wrap;justify-content:space-around;gap:20px;padding:26px 20px;border-block:1px solid var(--l);background:#0a1118}
+.stats{display:flex;flex-wrap:wrap;justify-content:space-around;gap:20px;padding:26px 20px;border-block:1px solid var(--l);background:#0d141d}
 .stats div{text-align:center}.stats b{display:block;font-size:34px;color:var(--c)}.stats span{color:var(--m)}
 section.s{padding:70px 0}h2{font-size:clamp(28px,4vw,40px);margin:0 0 30px;letter-spacing:-.02em}
 .cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 .card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:22px;transition:.25s}
-.cards .card:hover,.cc:hover{border-color:var(--g);box-shadow:0 0 30px #39ff8822;transform:translateY(-4px)}
+.cards .card:hover,.cc:hover{border-color:var(--g);box-shadow:0 0 30px #34d39922;transform:translateY(-4px)}
 .card svg{width:40px;height:40px;stroke:var(--g);fill:none;stroke-width:1.6;margin-bottom:10px}
 .card h3{margin:0 0 6px}.card p{margin:0;color:var(--m)}
 .belts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.bt{flex:1;min-width:120px;padding:16px 10px;border-radius:10px;text-align:center;font-weight:800;color:#05090d}
+.bt{flex:1;min-width:120px;padding:16px 10px;border-radius:10px;text-align:center;font-weight:800;color:#070b11}
 .rv{opacity:0;transform:translateY(24px);transition:.6s}.rv.in{opacity:1;transform:none}
 footer{border-top:1px solid var(--l);padding:28px 20px;text-align:center;color:var(--m)}
 .top2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0 24px}
 .top2 .card b{font-size:26px;display:block}.bar{height:8px;background:var(--l);border-radius:9px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--c))}
 .cc{display:block;color:var(--t);background:var(--p);border:1px solid var(--l);border-radius:14px;padding:18px;transition:.25s}
 .chip{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--c);color:var(--c)}
-.done{border-color:#39ff8866}.done .chip{border-color:var(--g);color:var(--g)}
+.done{border-color:#34d39966}.done .chip{border-color:var(--g);color:var(--g)}
 ul.bg{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 ul.bg li{padding:12px;border:1px dashed var(--l);border-radius:10px;opacity:.45}ul.bg li.on{opacity:1;border:1px solid var(--y)}ul.bg span{display:block;font-size:13px;color:var(--m)}
 .lb div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--l)}.lb .me{color:var(--g);font-weight:800}
 .bar2{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:10px 0 16px}.bar2 b{flex:1}
 .grid{display:grid;gap:16px}@media(min-width:960px){.grid{grid-template-columns:1fr 1.25fr}}
-.term{background:#04080c;border:1px solid var(--l);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;height:min(70vh,560px);min-height:360px}
+.term{background:#070b11;border:1px solid var(--l);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;height:min(70vh,560px);min-height:360px}
 .out{flex:1;overflow:auto;padding:12px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 .in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--l);font-size:13.5px}.in span{color:var(--g);white-space:nowrap}
 .in input{flex:1;min-width:0;background:none;border:0;color:var(--t);font:inherit;outline:0}
-textarea{width:100%;height:230px;background:#04080c;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:10px;font-size:13px;resize:vertical}
+textarea{width:100%;height:230px;background:#070b11;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:10px;font-size:13px;resize:vertical}
 .tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--m);padding:6px 10px;cursor:pointer;font:13px 'JetBrains Mono',monospace}.tabs button[aria-selected=true]{color:var(--g);border-color:var(--g)}
-.hint{border-left:3px solid var(--y);padding:6px 12px;margin:8px 0;color:#f3e3b8;background:#ffd16610}
+.hint{border-left:3px solid var(--y);padding:6px 12px;margin:8px 0;color:#f3e3b8;background:#fbbf2410}
 .modal{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20;padding:16px}
-.modal .card{max-width:520px;width:100%;border-color:var(--g);box-shadow:0 0 60px #39ff8855;animation:pop .4s}@keyframes pop{from{transform:scale(.85);opacity:0}}
+.modal .card{max-width:520px;width:100%;border-color:var(--g);box-shadow:0 0 60px #34d39955;animation:pop .4s}@keyframes pop{from{transform:scale(.85);opacity:0}}
 .big{font-size:44px;font-weight:800;color:var(--g)}
 .cf{position:fixed;top:40%;left:50%;width:8px;height:8px;border-radius:2px;animation:cf 1.4s ease-out forwards;z-index:21}
 @keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
-.auth{max-width:420px;margin:30px auto 60px;box-shadow:0 0 50px #27e0ff22}.auth h2{margin:4px 0 12px}
+.auth{max-width:420px;margin:30px auto 60px;box-shadow:0 0 50px #38bdf822}.auth h2{margin:4px 0 12px}
 .seg{display:flex;gap:6px;margin:6px 0 10px}.seg button{flex:1;padding:9px;background:var(--bg);border:1px solid var(--l);color:var(--m);border-radius:8px;cursor:pointer;font:inherit}.seg button[aria-selected=true]{color:var(--g);border-color:var(--g)}
-label{display:block;margin:12px 0;color:var(--m);font-size:14px}.f{width:100%;margin-top:4px;background:#04080c;border:1px solid var(--l);border-radius:8px;padding:11px;color:var(--t);font:15px 'JetBrains Mono',monospace}.f:focus{border-color:var(--c);outline:0;box-shadow:0 0 0 3px #27e0ff33}
+label{display:block;margin:12px 0;color:var(--m);font-size:14px}.f{width:100%;margin-top:4px;background:#070b11;border:1px solid var(--l);border-radius:8px;padding:11px;color:var(--t);font:15px 'JetBrains Mono',monospace}.f:focus{border-color:var(--c);outline:0;box-shadow:0 0 0 3px #38bdf833}
 .btn.sm{padding:4px 10px}
 .chat{margin-top:14px}.cmsg{padding:6px 0;border-bottom:1px solid var(--l);font-size:14px;white-space:pre-wrap}.cmsg.me{color:var(--c)}.cmsg.ai{color:var(--t)}
 [data-theme=light]{--bg:#f3f6f9;--p:#fff;--l:#d5dee6;--t:#14202b;--m:#51657a;--g:#0a9d57;--c:#0a7f9f;--r:#c62f3d;--y:#b7791f;color-scheme:light}
-[data-theme=light] .term,[data-theme=light] textarea,[data-theme=light] .demo{--t:#dbe7f0;--m:#8196a8;--g:#39ff88;--c:#27e0ff}
+[data-theme=light] .term,[data-theme=light] textarea,[data-theme=light] .demo{--t:#e6edf5;--m:#93a4b8;--g:#34d399;--c:#38bdf8}
 [data-theme=light] h1{background:linear-gradient(120deg,#0b2e22,#0a7a4a 50%,#0a6f86);-webkit-background-clip:text;background-clip:text}
 [data-theme=light] .stats{background:#e8eef3}[data-theme=light] .btn.glow{color:#fff}
 .sec{margin:28px 0}.sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}.sh h3{margin:0}.sh small{color:var(--m)}
@@ -87,7 +87,7 @@ label{display:block;margin:12px 0;color:var(--m);font-size:14px}.f{width:100%;ma
 /* ---- v7 polish: professional surfaces + motion ---- */
 :root{--r2:18px;--sh1:0 1px 0 #ffffff08 inset,0 10px 28px -16px #000c;--sh2:0 24px 60px -24px #000d;--ease:cubic-bezier(.2,.8,.2,1)}
 body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(40% 35% at 18% 12%,#27e0ff14,transparent 70%),radial-gradient(35% 40% at 85% 20%,#39ff8812,transparent 70%),radial-gradient(45% 40% at 60% 95%,#7c5cff10,transparent 70%);animation:drift 28s ease-in-out infinite alternate}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(40% 35% at 18% 12%,#38bdf814,transparent 70%),radial-gradient(35% 40% at 85% 20%,#34d39912,transparent 70%),radial-gradient(45% 40% at 60% 95%,#818cf810,transparent 70%);animation:drift 28s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate3d(-3%,2%,0) scale(1.06)}}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}}
 @keyframes pageIn{from{opacity:0}}
@@ -100,7 +100,7 @@ body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none
 @keyframes ping{50%{opacity:.35;transform:scale(.75)}}
 @keyframes rip{to{transform:scale(4);opacity:0}}
 @keyframes fade{from{opacity:0}}
-header.top{position:sticky;top:0;z-index:30;max-width:none;padding:12px max(20px,calc((100vw - 1120px)/2));background:#070b10cc;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+header.top{position:sticky;top:0;z-index:30;max-width:none;padding:12px max(20px,calc((100vw - 1120px)/2));background:#0a0f16cc;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
 header.top.scrolled{border-color:var(--l);box-shadow:0 12px 30px -22px #000}
 header nav{align-items:center}
 header nav a{position:relative;padding:6px 2px;color:var(--m);font-weight:600;transition:color .2s}
@@ -112,11 +112,11 @@ header nav a:hover::after,header nav a.on::after{transform:scaleX(1)}
 #app.enter .cards>*,#app.enter .top2>*,#app.enter .stats>*,#app.enter .sec{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0)*55ms)}
 .card,.cc{border-radius:var(--r2);box-shadow:var(--sh1)}
 .cc{position:relative;overflow:hidden;transition:transform .35s var(--ease),border-color .3s,box-shadow .35s}
-.cc::before{content:"";position:absolute;inset:0;background:radial-gradient(260px 130px at var(--mx,50%) var(--my,0%),#39ff8822,transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.cc::before{content:"";position:absolute;inset:0;background:radial-gradient(260px 130px at var(--mx,50%) var(--my,0%),#34d39922,transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
 .cc:hover::before{opacity:1}
-.cc:hover{transform:translateY(-5px);box-shadow:var(--sh2),0 0 0 1px #39ff8855}
+.cc:hover{transform:translateY(-5px);box-shadow:var(--sh2),0 0 0 1px #34d39955}
 .cc.done::after{content:"✓";position:absolute;top:12px;right:14px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:#04120a;font-weight:800;font-size:13px;animation:pop .5s var(--ease) both}
-.chip{background:#27e0ff10;letter-spacing:.02em}
+.chip{background:#38bdf810;letter-spacing:.02em}
 .btn{position:relative;overflow:hidden;border-radius:12px;font-weight:600;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s,background .2s}
 .btn:active{transform:translateY(0) scale(.98)}
 .btn.glow{background:linear-gradient(110deg,var(--g),var(--c) 45%,var(--g));background-size:200% 100%;animation:pl 2.6s infinite,sheen 6s linear infinite}
@@ -129,24 +129,24 @@ h1{background:linear-gradient(110deg,#fff 0%,var(--g) 35%,var(--c) 65%,#fff 100%
 .hero .lead{animation:rise .8s .2s var(--ease) both}
 .hero .hg>div:first-child>.btn{animation:rise .8s .35s var(--ease) both}
 .hero .btn.glow{animation:rise .8s .35s var(--ease) both,pl 2.6s 1s infinite,sheen 6s linear infinite}
-.hero::after{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,#27e0ff22,transparent 65%);filter:blur(10px);animation:floaty 14s ease-in-out infinite alternate;pointer-events:none}
+.hero::after{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,#38bdf822,transparent 65%);filter:blur(10px);animation:floaty 14s ease-in-out infinite alternate;pointer-events:none}
 .demo{animation:rise .9s .25s var(--ease) both}
 .stats b{font-variant-numeric:tabular-nums;background:linear-gradient(120deg,var(--c),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
 .top2 .card{position:relative;overflow:hidden}
 .top2 .card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--g),var(--c));opacity:.85}
 .top2 .card b{font-variant-numeric:tabular-nums}
 .bar{height:8px;border-radius:99px}
-.bar i{border-radius:99px;box-shadow:0 0 12px #39ff8866;transition:width .8s var(--ease);animation:barIn 1s var(--ease) both}
+.bar i{border-radius:99px;box-shadow:0 0 12px #34d39966;transition:width .8s var(--ease);animation:barIn 1s var(--ease) both}
 #ms .bar i{animation:none}
 .term{border-radius:var(--r2);box-shadow:var(--sh2);transition:box-shadow .3s,border-color .3s}
-.term:focus-within{border-color:#27e0ff99;box-shadow:0 0 0 1px #27e0ff55,0 24px 64px -24px #27e0ff55}
-.term .tb{background:linear-gradient(180deg,#0e1620,#0a1119)}
+.term:focus-within{border-color:#38bdf899;box-shadow:0 0 0 1px #38bdf855,0 24px 64px -24px #38bdf855}
+.term .tb{background:linear-gradient(180deg,#111a26,#0c131c)}
 .out div{animation:lineIn .22s var(--ease) both}
-.in span{text-shadow:0 0 12px #39ff8866}
+.in span{text-shadow:0 0 12px #34d39966}
 .in input{caret-color:var(--g)}
-.out::-webkit-scrollbar{width:8px}.out::-webkit-scrollbar-thumb{background:#1c2a37;border-radius:8px}
+.out::-webkit-scrollbar{width:8px}.out::-webkit-scrollbar-thumb{background:#1e2a3a;border-radius:8px}
 .cmsg{animation:rise .3s var(--ease) both;padding:8px 10px;margin:6px 0;border:0;border-radius:10px;background:#ffffff06}
-.cmsg.me{background:#27e0ff12}
+.cmsg.me{background:#38bdf812}
 .hint{animation:rise .35s var(--ease) both;border-radius:0 10px 10px 0}
 .auth{animation:rise .6s var(--ease) both}
 #cv{box-shadow:var(--sh2)}
@@ -158,8 +158,46 @@ h1{background:linear-gradient(110deg,#fff 0%,var(--g) 35%,var(--c) 65%,#fff 100%
 [data-theme=light] .card,[data-theme=light] .cc{--sh1:0 1px 2px #0001,0 10px 26px -18px #0004}
 [data-theme=light] .stats b{background:linear-gradient(120deg,#0a7f9f,#0a9d57);-webkit-background-clip:text;background-clip:text}
 @media(max-width:640px){header.top{flex-wrap:wrap;gap:6px}header nav{gap:12px;flex-wrap:wrap}.hero::after{display:none}}
+/* ---- v8 colour system: sky->indigo is the brand, emerald means success, amber means attention, red means error ---- */
+:root{--a1:#38bdf8;--a2:#818cf8;--sh1:0 1px 0 #ffffff0a inset,0 12px 30px -18px #000d}
+[data-theme=light]{--a1:#0369a1;--a2:#4f46e5;--c:#0b6f8a;--g:#087f45}
+html{scrollbar-color:#2a3a4f transparent;scrollbar-width:thin}
+::selection{background:#38bdf83a}
+:focus-visible{outline-color:var(--a1)}
+@keyframes pl{50%{box-shadow:0 16px 40px -8px #38bdf8aa,0 0 0 1px #ffffff22 inset}}
+body::before{background:radial-gradient(40% 35% at 18% 12%,#38bdf814,transparent 70%),radial-gradient(35% 40% at 85% 20%,#818cf816,transparent 70%),radial-gradient(45% 40% at 60% 95%,#34d39910,transparent 70%)}
+.card{background:#101823;background:linear-gradient(180deg,color-mix(in srgb,var(--p) 90%,#fff 5%),var(--p))}
+.btn.glow{background:linear-gradient(110deg,var(--a1),var(--a2) 55%,var(--a1));background-size:200% 100%;color:#04101d;box-shadow:0 10px 30px -10px #38bdf899,0 0 0 1px #ffffff18 inset}
+[data-theme=light] .btn.glow{color:#fff}
+.btn:hover{border-color:var(--a1)}
+h1{background:linear-gradient(110deg,#fff 0%,var(--a1) 40%,var(--a2) 70%,#fff 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text}
+[data-theme=light] h1{background:linear-gradient(110deg,#0f172a 0%,#0369a1 45%,#4f46e5 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text}
+.stats b,.big{background:linear-gradient(120deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text}
+[data-theme=light] .stats b{background:linear-gradient(120deg,#0284c7,#4f46e5);-webkit-background-clip:text;background-clip:text}
+.bar i{background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 0 12px #38bdf855}
+#ms .bar i{background:linear-gradient(90deg,var(--g),var(--a1))}
+.sec.cleared .bar i{background:linear-gradient(90deg,var(--y),var(--g))}
+.wrap>h2::after,.top2 .card::before,#sp,header nav a::after{background:linear-gradient(90deg,var(--a1),var(--a2))}
+#sp{box-shadow:0 0 10px #38bdf8aa}
+.cc:hover{border-color:#38bdf866;box-shadow:var(--sh2)}
+.cc::before{background:radial-gradient(260px 130px at var(--mx,50%) var(--my,0%),#38bdf81c,transparent 70%)}
+.cards .card:hover{border-color:#38bdf866;box-shadow:0 18px 40px -22px #38bdf855}
+.eyebrow i{background:var(--a1);box-shadow:0 0 10px var(--a1)}
+.hero::after{background:radial-gradient(circle,#818cf822,transparent 65%)}
+.chip{background:#38bdf812}
+.tabs button[aria-selected=true],.seg button[aria-selected=true]{color:var(--a1);border-color:var(--a1)}
+.f:focus{border-color:var(--a1);box-shadow:0 0 0 3px #38bdf833}
+.cmsg.me{color:var(--t);background:#38bdf814}
+.hint{background:#fbbf2410;color:#fde7a8}
+[data-theme=light] .hint{color:#7a5410}
+.out::-webkit-scrollbar-thumb{background:#2a3a4f}
+.ag{padding:9px 13px;margin:7px 0;border-radius:10px;white-space:pre-wrap;word-break:break-word;font-size:14px;animation:rise .3s var(--ease) both}
+.ag-th{background:#818cf812;border:1px solid #818cf833;font-style:italic}
+.ag-cmd{font-family:'JetBrains Mono',monospace;background:#070b11;color:#e6edf5;border:1px solid var(--l)}
+.ag-obs{font-family:'JetBrains Mono',monospace;background:#0a0f16;color:#93a4b8;border-left:3px solid var(--l);font-size:13px}
+.ag-done{background:#34d39912;border:1px solid #34d39944}
 </style></head><body>
-<header class="top"><a href="#home" class="mono"><b>&gt;_ Debug Dojo</b></a><nav><a href="#learn">Learn</a><a href="#cmds">Commands</a><a href="#dojo">Dojo</a><a href="#lab">Linux Lab</a><a href="#login" id="au">Log in</a><button class="btn sm" id="th" aria-label="Toggle light or dark theme">◐</button><button class="btn sm" id="sn" aria-label="Toggle typing sound" aria-pressed="false">🔇</button></nav></header>
+<header class="top"><a href="#home" class="mono"><b>&gt;_ Debug Dojo</b></a><nav><a href="#learn">Learn</a><a href="#cmds">Commands</a><a href="#agent">Agent</a><a href="#dojo">Dojo</a><a href="#lab">Linux Lab</a><a href="#login" id="au">Log in</a><button class="btn sm" id="th" aria-label="Toggle light or dark theme">◐</button><button class="btn sm" id="sn" aria-label="Toggle typing sound" aria-pressed="false">🔇</button></nav></header>
 <main id="app"></main>
 <script>
 const $=(s,r=document)=>r.querySelector(s),HOME='/home/dojo';
@@ -167,7 +205,7 @@ let SV={xp:0,done:{},streak:0,last:''},S,fs,TM;
 try{Object.assign(SV,JSON.parse(localStorage.getItem('dd1')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('dd1',JSON.stringify(SV))}catch(e){}};
 const day=(o=0)=>new Date(Date.now()-o*864e5).toISOString().slice(0,10);
-const BELTS=[['White',0,'#e8eef3'],['Yellow',100,'#ffd166'],['Green',300,'#39ff88'],['Brown',550,'#c08457'],['Black',850,'#6b7c8c']];
+const BELTS=[['White',0,'#e8eef3'],['Yellow',100,'#fbbf24'],['Green',300,'#34d399'],['Brown',550,'#c08457'],['Black',850,'#6b7c8c']];
 const BONUS=50;
 const belt=x=>BELTS.filter(b=>b[1]<=x).pop();
 const dn=()=>Object.keys(SV.done).length,fmt=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
@@ -586,15 +624,15 @@ const send=async()=>{const i=$('#ci'),t=i.value.trim();if(!t)return;i.value='';a
 try{const files={};(ch.edit||[]).forEach(e=>{const k=e[0]==='/'?e:HOME+'/'+e;if(fs[k])files[e]=fs[k].c});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge:ch.id,messages:msgs.slice(-8),history:S.hist.slice(-8),files})});const j=await r.json().catch(()=>({}));const a=r.ok?j.answer:(r.status===401?'Log in to chat with Sensei.':(j.error||'Sensei is unavailable.'));w.textContent='Sensei: '+a;if(r.ok)msgs.push({role:'assistant',content:a})}catch(e){w.textContent='Sensei is offline here. Use the Hint button.'}};
 $('#cs').onclick=send;$('#ci').onkeydown=e=>{if(e.key==='Enter')send()}}
 async function cert(){app.innerHTML='<div class="wrap"><h2>Your certificate</h2><p id="cs2" style="color:var(--m)">Checking your progress...</p><canvas id="cv" width="1200" height="850" style="display:none;max-width:100%;border:1px solid var(--l);border-radius:12px" aria-label="Certificate of completion"></canvas><p><button class="btn glow" id="cd" hidden>Download PNG</button></p></div>';
-try{const r=await fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json().catch(()=>({}));if(!r.ok){$('#cs2').textContent=r.status===401?'Log in to get your certificate.':(j.error||'Certificate is not available yet.');return}
+try{const r=await fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json().catch(()=>({}));if(!r.ok){$('#cs2').textContent=r.status===401?'Log in to get your certificate.':(j.error||'Certificate is not available yet.');if(r.status===403)sampleOn($('#cv'),$('#cs2'));return}
 $('#cs2').textContent='Congratulations, '+j.name+'! Your certificate is ready.';try{await document.fonts.ready}catch(e){}drawCert($('#cv'),j);$('#cv').style.display='block';const b=$('#cd');b.hidden=false;
-b.onclick=()=>$('#cv').toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='debug-dojo-certificate-'+j.name+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)})}catch(e){$('#cs2').textContent='Certificates need the Dojo server (run npm start).'}}
-function drawCert(cv,j){const x=cv.getContext('2d'),W=cv.width,H=cv.height,bt=belt(j.xp),F="'Bricolage Grotesque',Arial,sans-serif";const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#070b10');g.addColorStop(1,'#0d1f2b');x.fillStyle=g;x.fillRect(0,0,W,H);
-x.strokeStyle='#39ff88';x.lineWidth=6;x.strokeRect(30,30,W-60,H-60);x.strokeStyle='#27e0ff';x.lineWidth=2;x.strokeRect(46,46,W-92,H-92);x.textAlign='center';
-x.fillStyle='#39ff88';x.font="700 22px 'JetBrains Mono',monospace";x.fillText('>_ DEBUG DOJO',W/2,120);x.fillStyle='#dbe7f0';x.font='700 58px '+F;x.fillText('Certificate of Completion',W/2,230);x.fillStyle='#8196a8';x.font='24px '+F;x.fillText('This certifies that',W/2,320);
-let sz=84;x.fillStyle='#27e0ff';x.font='700 '+sz+'px '+F;while(x.measureText(j.name).width>W-200&&sz>30){sz-=4;x.font='700 '+sz+'px '+F}x.fillText(j.name,W/2,430);
-x.fillStyle='#dbe7f0';x.font='28px '+F;x.fillText('has completed all '+j.total+' Linux and DevSecOps challenges',W/2,510);x.fillText('with '+j.xp+' XP and earned the '+bt[0]+' Belt.',W/2,556);x.fillStyle=bt[2];x.fillRect(W/2-120,590,240,16);
-x.fillStyle='#8196a8';x.font="20px 'JetBrains Mono',monospace";x.fillText('Issued '+j.date+'  |  Certificate ID '+j.id,W/2,700);x.fillText('Verify: '+location.origin+'/api/verify/'+j.id,W/2,740)}
+b.onclick=()=>$('#cv').toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='debug-dojo-certificate-'+j.name+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)})}catch(e){$('#cs2').textContent='Certificates need the Dojo server (run npm start).';sampleOn($('#cv'),$('#cs2'))}}
+function drawCert(cv,j){const x=cv.getContext('2d'),W=cv.width,H=cv.height,bt=belt(j.xp),F="'Bricolage Grotesque',Arial,sans-serif";const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0a0f16');g.addColorStop(1,'#12263a');x.fillStyle=g;x.fillRect(0,0,W,H);
+x.strokeStyle='#c9a24a';x.lineWidth=6;x.strokeRect(30,30,W-60,H-60);x.strokeStyle='#5b7a99';x.lineWidth=2;x.strokeRect(46,46,W-92,H-92);x.textAlign='center';
+x.fillStyle='#d9b85c';x.font="700 22px 'JetBrains Mono',monospace";x.fillText('>_ DEBUG DOJO',W/2,120);x.fillStyle='#e6edf5';x.font='700 58px '+F;x.fillText('Certificate of Completion',W/2,230);x.fillStyle='#93a4b8';x.font='24px '+F;x.fillText('This certifies that',W/2,320);
+let sz=84;x.fillStyle='#f4dc9a';x.font='700 '+sz+'px '+F;while(x.measureText(j.name).width>W-200&&sz>30){sz-=4;x.font='700 '+sz+'px '+F}x.fillText(j.name,W/2,430);
+x.fillStyle='#e6edf5';x.font='28px '+F;x.fillText('has completed all '+j.total+' Linux and DevSecOps challenges',W/2,510);x.fillText('with '+j.xp+' XP and earned the '+bt[0]+' Belt.',W/2,556);x.fillStyle=bt[2];x.fillRect(W/2-120,590,240,16);
+x.fillStyle='#93a4b8';x.font="20px 'JetBrains Mono',monospace";x.fillText('Issued '+j.date+'  |  Certificate ID '+j.id,W/2,700);x.fillText('Verify: '+location.origin+'/api/verify/'+j.id,W/2,740)}
 async function room(code){app.innerHTML=`<div class="wrap"><h2>Team rooms</h2><p style="color:var(--m)">Create a room for your class or team, share the code, and watch everyone's progress.</p><div id="rl" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div><div class="top2"><div class="card"><label>New room name<input class="f" id="rn" maxlength="40"></label><button class="btn" id="rc">Create room</button></div><div class="card"><label>Join with code<input class="f" id="rj" maxlength="6" autocapitalize="characters"></label><button class="btn" id="rb">Join</button></div></div><div id="re" class="e" role="alert" style="min-height:24px"></div><div id="rt"></div></div>`;
 const J=async(u,b)=>{const r=await fetch(u,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j},go=async f=>{$('#re').textContent='';try{await f()}catch(e){$('#re').textContent=e.message}};
 go(async()=>{const L=await J('/api/rooms');$('#rl').innerHTML=L.map(x=>`<a class="btn" href="#room-${x.code}">${esc(x.name)} · ${x.code}</a>`).join('')||'<span style="color:var(--m)">No rooms yet.</span>'});
@@ -675,14 +713,52 @@ $('#cq').oninput=e=>draw(e.target.value);draw('');$('#cq').focus()}
 const RM=()=>{try{return matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}};
 const countUp=el=>{const m=el.textContent.trim().match(/^(\d+)(\+?)$/);if(!m||RM())return;const n=+m[1],suf=m[2],t0=performance.now(),f=now=>{const k=Math.min(1,(now-t0)/900);el.textContent=Math.round(n*(1-Math.pow(1-k,3)))+suf;if(k<1)requestAnimationFrame(f)};el.textContent='0'+suf;requestAnimationFrame(f)};
 let CIO=null;
-function polish(){try{const a=$('#app');if(!a)return;a.classList.remove('enter');void a.offsetWidth;a.classList.add('enter');
+function polish(){try{const a=$('#app');if(!a)return;a.classList.remove('enter');void a.offsetWidth;a.classList.add('enter');if($('#cth'))sampleThumb();
 a.querySelectorAll('.cards,.top2,.stats').forEach(g=>[...g.children].forEach((c,i)=>c.style.setProperty('--i',i)));
 a.querySelectorAll('.sec').forEach((c,i)=>c.style.setProperty('--i',i));
 if(!CIO&&typeof IntersectionObserver!=='undefined')CIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('b').forEach(countUp);CIO.unobserve(e.target)}}),{threshold:.4});
 if(CIO)a.querySelectorAll('.stats,.top2').forEach(g=>CIO.observe(g));
 const h=(location.hash.slice(1)||'home').split('-')[0];document.querySelectorAll('header nav a').forEach(l=>{const t=(l.getAttribute('href')||'').slice(1);l.classList.toggle('on',t===h||(h==='ch'&&t==='dojo'))})}catch(e){}}
+const sampleData=()=>({name:USER?USER.username:'your-username',xp:CH.reduce((a,c)=>a+c.xp,0)+new Set(CH.map(c=>c.cat)).size*BONUS,total:CH.length,date:new Date().toISOString().slice(0,10),id:'DD-SAMPLE0000'});
+function drawSample(cv){if(!cv)return;drawCert(cv,sampleData());const x=cv.getContext('2d'),W=cv.width,H=cv.height;x.save();x.translate(W/2,H/2);x.rotate(-Math.PI/9);x.globalAlpha=.16;x.fillStyle='#ffffff';x.font="800 190px 'Bricolage Grotesque',Arial,sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('SAMPLE',0,0);x.restore();x.save();x.textAlign='center';x.fillStyle='#d9b85c';x.font="18px 'JetBrains Mono',monospace";x.fillText('SAMPLE PREVIEW - NOT A VALID CERTIFICATE',W/2,H-60);x.restore()}
+function sampleOn(cv,note){if(!cv)return;drawSample(cv);cv.style.display='block';if(note)note.textContent+=' Here is a sample of the certificate you will get automatically when you finish all '+CH.length+' challenges.';try{document.fonts.ready.then(()=>drawSample(cv))}catch(e){}}
+function sampleThumb(){const c=$('#cth');if(!c)return;drawSample(c);c.onclick=()=>{location.hash='cert-sample'};c.title='Click to see the full preview';try{document.fonts.ready.then(()=>drawSample(c))}catch(e){}}
+function certSample(){const left=CH.filter(c=>!SV.done[c.id]),pct=Math.round(dn()/CH.length*100);
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>Sample certificate</b></div><p style="color:var(--m)">This is how your certificate will look. It is created <b>automatically</b> the moment you finish all ${CH.length} challenges. It carries your login name, your XP, your belt, the date, and a verification ID that anyone can check.</p><canvas id="cv" width="1200" height="850" style="display:block;max-width:100%;border:1px solid var(--l);border-radius:12px" aria-label="Sample certificate"></canvas><div class="card" style="margin:18px 0 40px"><b>Your progress</b> <span class="mono" style="float:right">${dn()}/${CH.length}</span><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div>${left.length?`<p style="color:var(--m);margin:10px 0 4px">Still to do:</p><ul style="margin:0;padding-left:18px">${left.map(c=>`<li><a href="#ch-${c.id}">${c.title}</a> <span class="chip">${c.cat}</span></li>`).join('')}</ul>`:`<p style="color:var(--y)">🎓 You finished everything.</p><a class="btn glow" href="#cert">Get my real certificate</a>`}</div></div>`;
+drawSample($('#cv'));try{document.fonts.ready.then(()=>drawSample($('#cv')))}catch(e){}}
+const AG_MAX=10;
+const AG_EX=['Find the biggest log file under /var/log and tell me its name','Create a folder called report with three text files in it','Find which process uses the most CPU and stop it'];
+function newSandbox(ch){return {fs:mkfs(ch?ch.files:{}),cwd:HOME,env:{HOME,USER:'dojo',SHELL:'/bin/bash',PATH:'/usr/local/bin:/usr/bin:/bin',LANG:'en_US.UTF-8'},hist:[],ch,flags:{},procs:[{pid:1,u:'root',c:'0.0',cmd:'/sbin/init'},{pid:42,u:'root',c:'0.1',cmd:'sshd: /usr/sbin/sshd -D'},{pid:88,u:'dojo',c:'0.0',cmd:'-bash'},...((ch&&ch.procs)||[]).map(p=>({...p}))],won:0,O:{innerHTML:''},edit:()=>{},put:()=>{},onWin:()=>{}}}
+function inSandbox(sb,fn){const s0=S,f0=fs;S=sb;fs=sb.fs;try{return fn()}finally{S=s0;fs=f0}}
+function agentExec(sb,a){return inSandbox(sb,()=>{
+if(a.type==='run'){sb.hist.push(a.cmd);let o;try{o=run(a.cmd)}catch(e){o='shell error: '+e.message}return o||'(no output)'}
+const p=res(a.path);if(!fs[dirname(p)])return 'write failed: no such directory';fs[p]={m:'rw-r--r--',...fs[p],c:a.content};if(S.ch&&S.ch.check&&!S.won&&S.ch.check())win();return 'wrote '+a.content.length+' bytes to '+a.path})}
+async function runAgent(ch,goal,story,ui){const sb=newSandbox(ch),steps=[];let mode='';
+for(let i=0;i<AG_MAX&&!ui.stopped();i++){ui.status('Step '+(i+1)+'/'+AG_MAX+': thinking...');let j;
+try{const r=await fetch('/api/agent/step',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({goal,challenge:ch&&ch.id!=='gen'?ch.id:'',story:String(story||'').slice(0,600),steps,mode})});j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(r.status===401?'Log in to use the agent.':(j.error||'The agent service is not available.'))}catch(e){ui.fail(e.message);return}
+mode=j.source==='local'?'local':'';ui.thought(j.thought,j.source);
+if(j.action.type==='finish'){ui.finish(j.action.summary,!!sb.won,i);return}
+const obs=agentExec(sb,j.action);ui.act(j.action,obs);steps.push({thought:String(j.thought||'').slice(0,300),action:j.action,observation:String(obs).slice(0,600)});
+if(sb.won){ui.finish('Goal reached: all the challenge checks pass.',true,i+1);return}
+await new Promise(r=>setTimeout(r,RM()?0:700))}
+ui.finish(ui.stopped()?'Stopped by you.':'Stopped: the step limit was reached.',!!sb.won,steps.length)}
+function agent(id){const ch=CH.find(c=>c.id===id)||(id==='gen'&&GEN)||null;
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>🤖 Debug Agent</b></div><p style="color:var(--m)">An <b>agent</b> gets a goal and works in a loop: <b>think → run a command in its own sandbox → read the result → decide the next step</b>. You watch every step. It never touches your terminal, and agent runs give no XP.</p><div class="card">${ch?`<b>Goal:</b> solve the challenge <i>${ch.title}</i><p style="color:var(--m);margin:8px 0 0">${ch.story}</p>`:`<label>Goal for the agent<input class="f" id="ag-goal" maxlength="200" placeholder="Describe what the agent should do in the sandbox..."></label><div id="ag-ex" style="display:flex;gap:6px;flex-wrap:wrap"></div><p style="color:var(--m);font-size:13px;margin:12px 0 0">Or let it solve a challenge: ${CH.map(c=>`<a href="#agent-${c.id}">${c.title}</a>`).join(' · ')}</p>`}<div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap"><button class="btn glow" id="ar" style="padding:10px 22px;font-size:16px">▶ Run agent</button><button class="btn" id="as" disabled>■ Stop</button><span class="mono" id="ast" style="color:var(--m)"></span></div></div><div id="ag" style="margin:16px 0 40px"></div></div>`;
+if(!ch){const g=$('#ag-goal');$('#ag-ex').innerHTML=AG_EX.map(x=>'<button class="btn sm" type="button">'+esc(x)+'</button>').join('');$('#ag-ex').querySelectorAll('button').forEach((b,i)=>{b.onclick=()=>{g.value=AG_EX[i];g.focus()}})}
+let stopped=false;const box=$('#ag');
+$('#as').onclick=()=>{stopped=true;$('#ast').textContent='Stopping...'};
+$('#ar').onclick=async()=>{const goal=ch?'Solve the challenge: '+ch.title.replace(/&[a-z]+;/g,''):$('#ag-goal').value.trim();if(goal.length<3){$('#ast').textContent='Write a goal first.';return}
+box.innerHTML='';stopped=false;$('#ar').disabled=true;$('#as').disabled=false;
+const mk=(cls,t)=>{const d=document.createElement('div');d.className='ag '+cls;d.textContent=t;box.appendChild(d);if(d.scrollIntoView)d.scrollIntoView({block:'nearest'});return d};
+const ui={stopped:()=>stopped,status:t=>{$('#ast').textContent=t},
+thought:(t,src)=>mk('ag-th','💭 '+(t||'(thinking)')+(src==='local'?'   [built-in demo agent]':'')),
+act:(a,o)=>{mk('ag-cmd',a.type==='run'?'$ '+a.cmd:'✎ write '+a.path+'\n'+a.content.slice(0,300)+(a.content.length>300?'\n…':''));const t=String(o);mk('ag-obs '+col(t.split('\n')[0]),t.slice(0,600))},
+fail:m=>mk('ag-done e','⚠ '+m),
+finish:(sum,ok,n)=>mk('ag-done '+(ok?'o':''),(ok?'✅ Solved in '+n+' step'+(n===1?'':'s')+'. ':'⏹ ')+sum+(ok?' No XP is given for agent runs, so now try it yourself!':''))};
+await runAgent(ch,goal,ch?ch.story.replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,' '):'',ui);
+$('#ar').disabled=false;$('#as').disabled=true;$('#ast').textContent=''}}
 function chal(id){const ch=CH.find(c=>c.id===id)||(id==='gen'&&GEN);if(!ch)return dojo();let hn=0;const rw=()=>Math.max(10,ch.xp-hn*10),t0=Date.now();
-app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>${ch.title} <span class="chip">${ch.cat}</span></b><span class="mono" id="tm">00:00</span><span>Reward <b id="rw" style="flex:none">${rw()}</b> XP</span><button class="btn" id="ai">Ask AI Sensei (−10 XP)</button><button class="btn" id="hb">Hint (−10 XP)</button></div>
+app.innerHTML=`<div class="wrap"><div class="bar2"><a href="#dojo">← Dojo</a><b>${ch.title} <span class="chip">${ch.cat}</span></b><span class="mono" id="tm">00:00</span><span>Reward <b id="rw" style="flex:none">${rw()}</b> XP</span><a class="btn sm" href="#agent-${id}" title="Watch an AI agent solve this in its own sandbox (no XP)">🤖 Watch agent</a><button class="btn" id="ai">Ask AI Sensei (−10 XP)</button><button class="btn" id="hb">Hint (−10 XP)</button></div>
 <div class="grid"><div><div class="card"><p style="margin:0">${ch.story}</p></div><div class="card" id="ms"></div><div id="hs"></div>${edHTML}</div>${termHTML}</div></div>`;
 $('#rw').textContent=rw();TM=setInterval(()=>$('#tm').textContent=fmt((Date.now()-t0)/1000|0),1000);
 $('#hb').onclick=()=>{if(hn>=ch.hints.length)return;const d=document.createElement('div');d.className='hint';d.textContent='Sensei: '+ch.hints[hn++];$('#hs').appendChild(d);$('#rw').textContent=rw();if(hn>=ch.hints.length)$('#hb').disabled=true};
@@ -690,14 +766,14 @@ boot(ch);mission(ch);chat(ch,()=>{hn++;$('#rw').textContent=rw()});
 $('#ai').onclick=async()=>{const d=document.createElement('div');d.className='hint';d.textContent='Sensei is thinking...';$('#hs').appendChild(d);hn++;$('#rw').textContent=rw();
 const files={};ch.edit.forEach(e=>{const k=e[0]==='/'?e:HOME+'/'+e;if(fs[k])files[e]=fs[k].c});
 try{const r=await fetch('/api/sensei',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge:id,history:S.hist.slice(-8),files})});const j=await r.json();d.textContent='Sensei'+(j.source==='ai'?' (AI)':'')+': '+(j.answer||j.error)}catch(e){d.textContent='Sensei is offline here - use the Hint button.'}};
-S.onWin=()=>{clearT();let bonusNow=0;const t=(Date.now()-t0)/1000|0,first=!SV.done[id]&&id!=='gen',gain=first?rw():0,b0=belt(SV.xp);if(first){SV.done[id]={t,h:hn};SV.xp+=gain;if(CH.filter(c=>c.cat===ch.cat).every(c=>SV.done[c.id])){bonusNow=BONUS;SV.xp+=BONUS}if(SV.last!==day()){SV.streak=SV.last===day(1)?SV.streak+1:1;SV.last=day()}save();sync()}const b1=belt(SV.xp),nx=CH.find(c=>!SV.done[c.id]);
-setTimeout(()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-label="Challenge solved"><div class="big">+${gain+bonusNow} XP</div>${bonusNow?`<p style="color:var(--y)">🏆 Section cleared: ${ch.cat} (+${BONUS} bonus XP)</p>`:''}<h3 style="margin:4px 0">${first?'Bug squashed!':'Practice run complete'}</h3><p class="mono" style="color:var(--m);font-size:13px">Time ${fmt(t)} · Hints ${hn}${b1!==b0?' · New belt: <b style="color:'+b1[2]+'">'+b1[0]+'</b>':''}</p><p><b>What was wrong:</b> ${ch.why}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn glow" style="padding:10px 20px;font-size:16px" href="${nx?'#ch-'+nx.id:'#cert'}">${nx?'Next challenge':'Get your certificate'}</a><button class="btn" id="cl">Keep playing</button><button class="btn" id="sh">Share</button></div></div>`;document.body.appendChild(m);$('#cl').focus();
+S.onWin=()=>{clearT();let bonusNow=0;const t=(Date.now()-t0)/1000|0,first=!SV.done[id]&&id!=='gen',gain=first?rw():0,b0=belt(SV.xp);if(first){SV.done[id]={t,h:hn};SV.xp+=gain;if(CH.filter(c=>c.cat===ch.cat).every(c=>SV.done[c.id])){bonusNow=BONUS;SV.xp+=BONUS}if(SV.last!==day()){SV.streak=SV.last===day(1)?SV.streak+1:1;SV.last=day()}save();(sync()||Promise.resolve()).then(()=>{if(dn()>=CH.length&&USER)fetch('/api/certificate',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{})})}const b1=belt(SV.xp),nx=CH.find(c=>!SV.done[c.id]);
+setTimeout(()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-label="Challenge solved"><div class="big">+${gain+bonusNow} XP</div>${bonusNow?`<p style="color:var(--y)">🏆 Section cleared: ${ch.cat} (+${BONUS} bonus XP)</p>`:''}${first&&dn()>=CH.length?'<p style="color:var(--y)">🎓 Course complete! Your certificate is issued automatically.</p>':''}<h3 style="margin:4px 0">${first?'Bug squashed!':'Practice run complete'}</h3><p class="mono" style="color:var(--m);font-size:13px">Time ${fmt(t)} · Hints ${hn}${b1!==b0?' · New belt: <b style="color:'+b1[2]+'">'+b1[0]+'</b>':''}</p><p><b>What was wrong:</b> ${ch.why}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn glow" style="padding:10px 20px;font-size:16px" href="${nx?'#ch-'+nx.id:'#cert'}">${nx?'Next challenge':'Get your certificate'}</a><button class="btn" id="cl">Keep playing</button><button class="btn" id="sh">Share</button></div></div>`;document.body.appendChild(m);$('#cl').focus();
 $('#cl').onclick=()=>m.remove();$('#sh').onclick=()=>{const msg=`I fixed "${ch.title}" in ${fmt(t)} on Debug Dojo. Beat my time! ${location.origin}${location.pathname}#ch-${id}`;try{(navigator.share?navigator.share({text:msg}):navigator.clipboard.writeText(msg).then(()=>{$('#sh').textContent='Copied!'})).catch(()=>{})}catch(e){}};m.querySelector('a').onclick=()=>m.remove();
-for(let i=0;i<36;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`--x:${(Math.random()-.5)*600}px;--y:${Math.random()*400-250}px;background:${['#39ff88','#27e0ff','#ffd166'][i%3]}`;document.body.appendChild(c);setTimeout(()=>c.remove(),1500)}},500)}}
+for(let i=0;i<36;i++){const c=document.createElement('i');c.className='cf';c.style.cssText=`--x:${(Math.random()-.5)*600}px;--y:${Math.random()*400-250}px;background:${['#34d399','#38bdf8','#818cf8','#fbbf24'][i%4]}`;document.body.appendChild(c);setTimeout(()=>c.remove(),1500)}},500)}}
 function dojo(){const b=belt(SV.xp),nx=BELTS[BELTS.indexOf(b)+1],pct=nx?Math.round((SV.xp-b[1])/(nx[1]-b[1])*100):100,rows=[...RIV,['You',SV.xp]].sort((a,c)=>c[1]-a[1]);
 app.innerHTML=`<div class="wrap"><h2>Your dojo</h2>${USER?`<p style="color:var(--m);margin-top:-14px">Signed in as <b>${USER.username}</b>. Progress syncs to your account.</p>`:`<p style="color:var(--m);margin-top:-14px">Guest mode. <a href="#login">Log in</a> to sync progress and join the live leaderboard.</p>`}<div class="top2"><div class="card"><span>Level</span><b>${Math.floor(SV.xp/100)+1}</b></div><div class="card"><span>XP</span><b>${SV.xp}</b></div><div class="card"><span>Belt</span><b style="color:${b[2]}">${b[0]}</b><div class="bar"><i style="width:${pct}%"></i></div><small style="color:var(--m)">${nx?nx[1]-SV.xp+' XP to '+nx[0]:'Max belt'}</small></div><div class="card"><span>Streak</span><b>🔥 ${stk()}d</b></div></div>
-<a class="cc" href="#learn" style="display:block;margin:6px 0 24px;border-color:var(--c)"><span class="chip">New here?</span><h3 style="margin:8px 0 4px">🎓 Academy: learn Linux from zero</h3><span style="color:var(--m)">${LESSONS.length} short lessons with a practice terminal and an AI tutor that explains everything. No XP, no pressure.</span></a><h2>Challenges</h2>${sections()}<h2 style="margin-top:30px">Practice</h2><div class="cards"><a class="cc" href="#lab" style="border-style:dashed"><span class="chip">Sandbox</span><h3 style="margin:8px 0 4px">Linux Lab</h3><span style="color:var(--m)">Free practice, no goals</span></a><a class="cc" href="#gen" style="border-style:dashed"><span class="chip">AI</span><h3 style="margin:8px 0 4px">AI challenge lab</h3><span style="color:var(--m)">AI builds a new broken setup</span></a><a class="cc" href="#room" style="border-style:dashed"><span class="chip">Team</span><h3 style="margin:8px 0 4px">Team rooms</h3><span style="color:var(--m)">Class or company leaderboard</span></a></div>
-<h2 style="margin-top:44px">Certificate</h2>${dn()>=CH.length?'<a class="btn glow" href="#cert">Get your certificate</a>':'<p style="color:var(--m)">Finish all '+CH.length+' challenges to unlock it ('+dn()+' done).</p>'}<h2 style="margin-top:44px">Badges</h2><ul class="bg">${BADGES.map(([n,d,f])=>`<li class="${f()?'on':''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
+<a class="cc" href="#learn" style="display:block;margin:6px 0 24px;border-color:var(--c)"><span class="chip">New here?</span><h3 style="margin:8px 0 4px">🎓 Academy: learn Linux from zero</h3><span style="color:var(--m)">${LESSONS.length} short lessons with a practice terminal and an AI tutor that explains everything. No XP, no pressure.</span></a><h2>Challenges</h2>${sections()}<h2 style="margin-top:30px">Practice</h2><div class="cards"><a class="cc" href="#lab" style="border-style:dashed"><span class="chip">Sandbox</span><h3 style="margin:8px 0 4px">Linux Lab</h3><span style="color:var(--m)">Free practice, no goals</span></a><a class="cc" href="#gen" style="border-style:dashed"><span class="chip">AI</span><h3 style="margin:8px 0 4px">AI challenge lab</h3><span style="color:var(--m)">AI builds a new broken setup</span></a><a class="cc" href="#room" style="border-style:dashed"><span class="chip">Team</span><h3 style="margin:8px 0 4px">Team rooms</h3><span style="color:var(--m)">Class or company leaderboard</span></a><a class="cc" href="#agent" style="border-style:dashed"><span class="chip">Agent</span><h3 style="margin:8px 0 4px">🤖 Debug Agent</h3><span style="color:var(--m)">Watch an AI agent think, act and fix</span></a></div>
+<h2 style="margin-top:44px">Certificate</h2>${dn()>=CH.length?'<a class="btn glow" href="#cert">Get your certificate</a>':'<p style="color:var(--m)">Finish all '+CH.length+' challenges to unlock it ('+dn()+' done).</p>'}${dn()<CH.length?`<div style="margin:14px 0 0"><canvas id="cth" width="1200" height="850" style="width:100%;max-width:380px;border-radius:12px;border:1px solid var(--l);cursor:pointer;display:block" aria-label="Sample certificate preview"></canvas><p style="margin:8px 0 0"><a href="#cert-sample">👁 Preview a sample certificate</a> <span style="color:var(--m)">(this is how yours will look)</span></p></div>`:''}<h2 style="margin-top:44px">Badges</h2><ul class="bg">${BADGES.map(([n,d,f])=>`<li class="${f()?'on':''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
 <h2 style="margin-top:44px">Leaderboard</h2><div class="card lb" id="lb" style="margin-bottom:50px">${rows.map((r,i)=>`<div class="${r[0]==='You'?'me':''}"><span>${i+1}. ${r[0]}</span><span class="mono">${r[1]} XP</span></div>`).join('')}<small style="color:var(--m)">Rivals are sample data; your score is saved in this browser.</small></div></div>`;
 fetch('/api/leaderboard').then(r=>r.json()).then(L=>{if(!Array.isArray(L)||!L.length||!$('#lb'))return;$('#lb').innerHTML=L.map((r,i)=>`<div class="${r.id===SV.id?'me':''}"><span>${i+1}. ${r.id===SV.id?'You':r.name}</span><span class="mono">${r.xp} XP</span></div>`).join('')+'<small style="color:var(--m)">Live from the Dojo server.</small>'}).catch(()=>{})}
 function home(){app.innerHTML=`<section class="hero"><canvas aria-hidden="true"></canvas><div class="wrap hg"><div><span class="eyebrow"><i></i>Hands-on Linux &amp; security training</span><h1>Break it.<br>Debug it.<br>Master it.</h1><p class="lead">Fix broken Linux systems and close real security holes in a safe in-browser terminal. Earn XP, climb belts.</p><a class="btn glow" id="go" href="#login">Start Training</a> <a class="btn" href="#lab" style="margin-left:8px">Open Linux Lab</a></div>
@@ -711,11 +787,11 @@ function home(){app.innerHTML=`<section class="hero"><canvas aria-hidden="true">
 <footer>Debug Dojo · built for DevOps practice · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></footer>`;
 bg($('canvas'));demo($('#dm'));if(USER)$('#go').href='#lab';const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.2});document.querySelectorAll('.rv').forEach(e=>io.observe(e))}
 function bg(cv){const x=cv.getContext('2d'),red=matchMedia('(prefers-reduced-motion:reduce)').matches;let W,Hh,P=[];const rs=()=>{W=cv.width=cv.offsetWidth;Hh=cv.height=cv.offsetHeight;P=Array.from({length:Math.min(60,W/18|0)},()=>({x:Math.random()*W,y:Math.random()*Hh,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))};rs();addEventListener('resize',rs);
-(function f(){if(!document.body.contains(cv))return;x.clearRect(0,0,W,Hh);P.forEach((p,i)=>{if(!red){p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+Hh)%Hh}x.globalAlpha=.7;x.fillStyle='#39ff88';x.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<110){x.globalAlpha=(1-d/110)*.25;x.strokeStyle='#27e0ff';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});if(!red)requestAnimationFrame(f)})()}
+(function f(){if(!document.body.contains(cv))return;x.clearRect(0,0,W,Hh);P.forEach((p,i)=>{if(!red){p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+Hh)%Hh}x.globalAlpha=.7;x.fillStyle='#38bdf8';x.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<110){x.globalAlpha=(1-d/110)*.25;x.strokeStyle='#818cf8';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});if(!red)requestAnimationFrame(f)})()}
 async function demo(el){const w=ms=>new Promise(r=>setTimeout(r,ms)),alive=()=>document.body.contains(el),line=c=>{const d=document.createElement('div');d.className='ln '+(c||'');el.appendChild(d);return d};
 const type=async t=>{const d=line();d.innerHTML='<span class="pr">$</span> <span></span><i class="cur"></i>';const s=d.children[1];for(const c of t){if(!alive())return;s.textContent+=c;await w(55)}d.querySelector('.cur').remove();await w(400)};
 while(alive()){el.innerHTML='';await type('ssh -i ~/.ssh/id_rsa prod');if(!alive())return;line('e').textContent='WARNING: UNPROTECTED PRIVATE KEY FILE! (mode 0644)';await w(1500);await type('chmod 600 ~/.ssh/id_rsa');if(!alive())return;line('o').textContent='✔ Connected to prod. Key is safe.';const x=document.createElement('div');x.className='xp';x.textContent='+50 XP';el.parentElement.appendChild(x);await w(2800);x.remove();await w(500)}}
-function route(){clearT();document.querySelectorAll('.modal').forEach(m=>m.remove());const h=location.hash.slice(1)||'home';if(SERVER&&!USER&&/^(dojo|lab|cert|gen|room.*|learn.*|cmds|ch-.+)$/.test(h)){location.hash='login';return}if(h==='dojo')dojo();else if(h==='lab')lab();else if(h==='login')login();else if(h==='cert')cert();else if(h.startsWith('learn'))learn(h.slice(6));else if(h==='cmds')cmds();else if(h==='gen')gen();else if(h.startsWith('room'))room(h.slice(5));else if(h.startsWith('ch-'))chal(h.slice(3));else home();scrollTo(0,0);polish()}
+function route(){clearT();document.querySelectorAll('.modal').forEach(m=>m.remove());const h=location.hash.slice(1)||'home';if(SERVER&&!USER&&/^(dojo|lab|cert|gen|room.*|learn.*|cmds|agent.*|ch-.+)$/.test(h)){location.hash='login';return}if(h==='dojo')dojo();else if(h==='lab')lab();else if(h==='login')login();else if(h==='cert')cert();else if(h==='cert-sample')certSample();else if(h.startsWith('learn'))learn(h.slice(6));else if(h==='cmds')cmds();else if(h.startsWith('agent'))agent(h.slice(6));else if(h==='gen')gen();else if(h.startsWith('room'))room(h.slice(5));else if(h.startsWith('ch-'))chal(h.slice(3));else home();scrollTo(0,0);polish()}
 let SND=false,AC=null;try{SND=localStorage.getItem('dd_snd')==='1';document.documentElement.dataset.theme=localStorage.getItem('dd_theme')||'dark'}catch(e){}
 const beep=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=600+Math.random()*200;g.gain.value=.03;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+.03)}catch(e){}};
 const setSnd=()=>{$('#sn').textContent=SND?'🔊':'🔇';$('#sn').setAttribute('aria-pressed',String(SND))};setSnd();
