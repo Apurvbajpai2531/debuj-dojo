@@ -13,5 +13,5 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0"
   },
-  "devDependencies": { "eslint": "^9.17.0" }
+  "devDependencies": { "eslint": "^10.13.0" }
 }
