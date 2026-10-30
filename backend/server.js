@@ -57,6 +57,18 @@ const view = (key) => ({ username: key }); // the key is the lowercase username
 const SECTIONS = { Permissions: ['perm', 'sshkey', 'secret'], Hardening: ['sshd'], Secrets: ['leak'], Incident: ['brute', 'miner'], DevSecOps: ['dockerfile', 'trivy', 'deps', 'iam', 'sqli', 'ports'] };
 const BONUS = 50; // extra XP for clearing a whole section (the frontend uses the same rule)
 const xpOf = (done) => Object.entries(done).reduce((a, [id, d]) => a + (CH_XP[id] ? Math.max(10, CH_XP[id] - d.h * 10) : 0), 0) + Object.values(SECTIONS).filter((ids) => ids.every((id) => done[id])).length * BONUS;
+// ---- CTF: flags are checked here, and the points are added to the score (leaderboard, rooms) ----
+const CTF = {
+  dotfile: { flag: 'flag{dotfiles_are_not_secret}', pts: 10 },
+  logs: { flag: 'flag{grep_is_your_friend}', pts: 20 },
+  deep: { flag: 'flag{find_can_search_everything}', pts: 20 },
+  b64: { flag: 'flag{base64_is_not_encryption}', pts: 30 },
+  ps: { flag: 'flag{processes_tell_stories}', pts: 30 },
+  env: { flag: 'flag{env_vars_leak_secrets}', pts: 40 },
+};
+const ctfPts = (u) => Object.keys((u && u.ctf) || {}).reduce((a, id) => a + (CTF[id] ? CTF[id].pts : 0), 0);
+const totalXp = (u) => xpOf((u && u.done) || {}) + ctfPts(u);
+const ctfLimit = rateLimit({ windowMs: 60_000, limit: 20, standardHeaders: true, legacyHeaders: false });
 function cleanDone(b) {
   if (!b || typeof b.done !== 'object' || !b.done) return null;
   const done = {};
@@ -142,7 +154,7 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.get('/api/auth/me', auth, (req, res) => res.json(view(req.user)));
 
-app.get('/api/progress', auth, (req, res) => res.json({ done: db.users[req.user].done, xp: xpOf(db.users[req.user].done) }));
+app.get('/api/progress', auth, (req, res) => res.json({ done: db.users[req.user].done, xp: totalXp(db.users[req.user]), ctf: Object.keys(db.users[req.user].ctf || {}) }));
 
 app.post('/api/progress', auth, (req, res) => {
   const done = cleanDone(req.body);
@@ -150,12 +162,12 @@ app.post('/api/progress', auth, (req, res) => {
   const u = db.users[req.user];
   for (const [id, d] of Object.entries(done)) if (!u.done[id]) u.done[id] = d; // first solve counts; never lose progress
   persist();
-  res.json({ ok: true, xp: xpOf(u.done) });
+  res.json({ ok: true, xp: totalXp(u) });
 });
 
 app.get('/api/leaderboard', (_req, res) => {
   res.json(Object.entries(db.users)
-    .map(([k, u]) => ({ id: k, name: k, xp: xpOf(u.done || {}) }))
+    .map(([k, u]) => ({ id: k, name: k, xp: totalXp(u) }))
     .filter((r) => r.xp > 0)
     .sort((a, b) => b.xp - a.xp).slice(0, 10));
 });
@@ -350,7 +362,7 @@ app.get('/api/rooms/:code', auth, (req, res) => {
   if (!r || !r.members.includes(req.user)) return res.status(404).json({ error: 'Room not found' });
   const members = r.members.map((m) => {
     const done = db.users[m] ? db.users[m].done : {};
-    return { user: m, xp: xpOf(done), solved: Object.keys(done).length };
+    return { user: m, xp: totalXp(db.users[m] || {}), solved: Object.keys(done).length };
   }).sort((a, b) => b.xp - a.xp);
   res.json({ code, name: r.name, owner: r.owner, members });
 });
@@ -420,6 +432,17 @@ app.post('/api/agent/step', agentLimit, async (req, res) => {
     if (hist.length === 0 && challenge) return res.json(localStep());
     res.json({ thought: 'The AI service did not answer properly.', action: { type: 'finish', summary: 'Stopped: the AI service returned an unusable reply.' }, source: 'ai' });
   }
+});
+
+app.post('/api/ctf/submit', ctfLimit, auth, (req, res) => {
+  const { id, flag } = req.body || {};
+  if (typeof id !== 'string' || !CTF[id] || typeof flag !== 'string' || flag.length > 200) return res.status(400).json({ error: 'bad request' });
+  const got = Buffer.from(flag.trim()), want = Buffer.from(CTF[id].flag);
+  const correct = got.length === want.length && crypto.timingSafeEqual(got, want);
+  const u = db.users[req.user];
+  u.ctf = u.ctf || {};
+  if (correct && !u.ctf[id]) { u.ctf[id] = Date.now(); persist(); } // points count once
+  res.json({ correct, points: correct ? CTF[id].pts : 0, xp: totalXp(u), solved: Object.keys(u.ctf) });
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
