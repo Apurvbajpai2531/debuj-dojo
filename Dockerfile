@@ -4,6 +4,7 @@ COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
 FROM node:26-alpine
+RUN npm install --global npm@latest
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
