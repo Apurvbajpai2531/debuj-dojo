@@ -74,3 +74,59 @@ Thumbs.db
 
 k8s/secret.yml
 
+
+
+# Backup files
+*.bak
+*.bak*
+*.bakg
+
+# Temporary patch scripts
+patch-*.js
+fix-llm.js
+
+# Backup and temporary configuration files
+*.yml.bak*
+*.yaml.bak*
+*.json.bak*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+
+
+# Backup files
+*.bak
+*.bak*
+*.bakg
+
+# Temporary patch scripts
+patch-*.js
+fix-llm.js
+
+# Backup and temporary configuration files
+*.yml.bak*
+*.yaml.bak*
+*.json.bak*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
