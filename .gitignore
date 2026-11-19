@@ -69,3 +69,8 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+
+
+
+k8s/secret.yml
+

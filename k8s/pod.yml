@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dojo
+spec:
+  containers:
+  - name: dojo
+    image: apurv25/debug-dojo:latest
+    ports:
+    - containerPort: 80

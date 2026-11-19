@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dojo-deployment
+  namespace: dojo
+  labels:
+    app: debug-dojo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-dojo
+  template:
+    metadata:
+      labels:
+        app: debug-dojo
+    spec:
+      containers:
+        - name: debug-dojo
+          image: apurv25/debug-dojo:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          env:
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: debug-dojo-secret
+                  key: GROQ_API_KEY
+            - name: GROQ_MODEL
+              value: "openai/gpt-oss-20b"
+
+          volumeMounts:
+            - name: dojo-storage
+              mountPath: /app/data
+
+      volumes:
+        - name: dojo-storage
+          persistentVolumeClaim:
+            claimName: dojo-pvc
