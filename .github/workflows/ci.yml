@@ -40,9 +40,10 @@ jobs:
         with: { image-ref: "debug-dojo:ci", severity: "CRITICAL,HIGH", exit-code: "1", ignore-unfixed: true }
       - name: Smoke test /health
         run: |
-          docker run -d --name d -p 3000:3000 debug-dojo:ci
+          docker run -d --name debug-dojo-app -p 3000:3000 debug-dojo:ci
           for i in $(seq 1 15); do curl -fs localhost:3000/health && exit 0; sleep 1; done
-          docker logs d; exit 1
+          docker logs debug-dojo-app
+          exit 1
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: [build, codeql]
